@@ -1,0 +1,169 @@
+/* ══════════════════════════════════════════════════════════════
+   Footer.css — Luxury Beauty Footer
+   ══════════════════════════════════════════════════════════════ */
+
+.luxury-footer {
+  margin-top: auto;
+  padding: 60px 0 40px;
+  background: #07060e;
+  border-top: 1px solid var(--sm-border);
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Newsletter Card ───────────────────────────────────────── */
+.footer-top-card {
+  border-radius: var(--sm-radius-xl);
+  border: 1px solid rgba(124, 92, 252, 0.25);
+  background: radial-gradient(circle at 10% 20%, rgba(124, 92, 252, 0.12) 0%, rgba(19, 16, 38, 0.95) 80%);
+}
+
+.footer-newsletter-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.footer-newsletter-sub {
+  color: var(--sm-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.footer-subscribe-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sm-border);
+  border-radius: var(--sm-radius-pill);
+  padding: 6px 8px 6px 18px;
+}
+
+.footer-email-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.88rem;
+  font-family: var(--sm-font-body);
+  outline: none;
+}
+
+.footer-email-input::placeholder {
+  color: var(--sm-text-dim);
+}
+
+.footer-sub-btn {
+  padding: 8px 20px !important;
+  font-size: 0.85rem !important;
+  border-radius: var(--sm-radius-pill) !important;
+}
+
+.subscribed-success-box {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--sm-radius-md);
+  color: var(--sm-success-light);
+}
+
+/* ── Brand and Links ───────────────────────────────────────── */
+.footer-brand-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.footer-brand-title {
+  font-family: var(--sm-font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.footer-brand-desc {
+  font-size: 0.86rem;
+  color: var(--sm-text-dim);
+  line-height: 1.6;
+}
+
+.trust-badge-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sm-text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--sm-border);
+  padding: 3px 10px;
+  border-radius: var(--sm-radius-pill);
+}
+
+.footer-col-title {
+  font-family: var(--sm-font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 18px;
+  letter-spacing: 0.02em;
+}
+
+.footer-link-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-link-list a {
+  color: var(--sm-text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: var(--sm-transition);
+}
+
+.footer-link-list a:hover {
+  color: var(--sm-primary-light);
+  transform: translateX(3px);
+  display: inline-block;
+}
+
+/* Prototype Info Card */
+.prototype-info-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--sm-border);
+  border-radius: var(--sm-radius-md);
+}
+
+.proto-text {
+  font-size: 0.82rem;
+  color: var(--sm-text-muted);
+  line-height: 1.5;
+}
+
+.proto-tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tech-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--sm-primary-light);
+  background: rgba(124, 92, 252, 0.12);
+  border: 1px solid rgba(124, 92, 252, 0.25);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* ── Bottom Bar ────────────────────────────────────────────── */
+.footer-copy-text {
+  font-size: 0.82rem;
+  color: var(--sm-text-dim);
+}
+
+.footer-disclaimer-text {
+  font-size: 0.78rem;
+  color: var(--sm-text-dim);
+}

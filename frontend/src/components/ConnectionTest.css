@@ -1,0 +1,91 @@
+/* ══════════════════════════════════════════════════════════════
+   ConnectionTest.css
+   ══════════════════════════════════════════════════════════════ */
+
+.connection-panel {
+  border: 1px solid rgba(108, 92, 231, 0.2);
+}
+
+.panel-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(108, 92, 231, 0.15);
+  color: var(--sm-primary-light);
+}
+
+/* ── Accent button variant ─────────────────────────────────── */
+.btn-glow-accent {
+  background: linear-gradient(135deg, var(--sm-accent), #e84393);
+}
+
+.btn-glow-accent:hover {
+  box-shadow: 0 6px 24px rgba(253, 121, 168, 0.4);
+}
+
+/* ── Spinner ───────────────────────────────────────────────── */
+.spin-icon {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+/* ── Result boxes ──────────────────────────────────────────── */
+.result-box {
+  padding: 16px;
+  border-radius: var(--sm-radius-sm);
+  margin-top: 8px;
+}
+
+.success-box {
+  background: rgba(0, 184, 148, 0.06);
+  border: 1px solid rgba(0, 184, 148, 0.2);
+}
+
+.error-box {
+  background: rgba(225, 112, 85, 0.06);
+  border: 1px solid rgba(225, 112, 85, 0.2);
+}
+
+.result-json {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  color: var(--sm-success);
+  overflow-x: auto;
+  margin: 0;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* ── Product preview cards ─────────────────────────────────── */
+.product-preview-card {
+  border-radius: var(--sm-radius-sm) !important;
+  padding: 12px !important;
+}
+
+.product-preview-card:hover {
+  transform: none;
+}
+
+.price-tag {
+  font-weight: 700;
+  color: var(--sm-success);
+  font-size: 0.95rem;
+}
+
+.rating-tag {
+  font-size: 0.78rem;
+  color: var(--sm-warning);
+}
+
+.result-box code {
+  background: rgba(108, 92, 231, 0.2);
+  color: var(--sm-primary-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}

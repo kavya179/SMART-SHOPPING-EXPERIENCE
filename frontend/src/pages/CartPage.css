@@ -1,0 +1,319 @@
+/* ══════════════════════════════════════════════════════════════
+   CartPage.css — Demo Shopping Bag & Checkout Styling
+   ══════════════════════════════════════════════════════════════ */
+
+.cart-page-wrapper {
+  padding-top: 120px;
+  padding-bottom: 80px;
+  min-height: 100vh;
+}
+
+.cart-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.cart-sub {
+  color: var(--sm-text-muted);
+  font-size: 1rem;
+}
+
+/* ── Free Shipping Progress Banner ─────────────────────────── */
+.shipping-progress-banner {
+  border-radius: var(--sm-radius-md);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.progress-track-sm {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--sm-radius-pill);
+  overflow: hidden;
+}
+
+.progress-fill-sm {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sm-success), #34d399);
+  border-radius: var(--sm-radius-pill);
+  transition: width 0.3s ease;
+}
+
+/* ── Cart Empty Card ───────────────────────────────────────── */
+.cart-empty-card {
+  max-width: 600px;
+  border-radius: var(--sm-radius-xl);
+}
+
+.empty-icon-circle-emerald {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--sm-success);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+/* ── Cart Items Table ──────────────────────────────────────── */
+.cart-items-card {
+  border-radius: var(--sm-radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cart-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.cart-table th {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--sm-border);
+  font-family: var(--sm-font-heading);
+  font-size: 0.8rem;
+  color: var(--sm-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cart-table td {
+  padding: 18px 16px;
+  border-bottom: 1px solid var(--sm-border);
+  vertical-align: middle;
+}
+
+.cart-item-thumbnail {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--sm-radius-md);
+  object-fit: cover;
+  border: 1px solid var(--sm-border);
+  background: #141226;
+}
+
+.cart-item-cat {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cart-item-name {
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.cart-item-brand {
+  font-size: 0.78rem;
+  color: var(--sm-text-dim);
+  text-transform: uppercase;
+}
+
+.cart-item-unit-price {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.cart-unit-strike {
+  font-size: 0.78rem;
+  color: var(--sm-text-dim);
+  text-decoration: line-through;
+}
+
+/* Quantity Stepper */
+.quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sm-border);
+  border-radius: var(--sm-radius-pill);
+  padding: 3px;
+}
+
+.btn-step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--sm-transition);
+}
+
+.btn-step:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.qty-value {
+  font-family: var(--sm-font-heading);
+  font-weight: 700;
+  font-size: 0.92rem;
+  min-width: 28px;
+  text-align: center;
+}
+
+.item-subtotal-val {
+  font-family: var(--sm-font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--sm-success-light);
+}
+
+.btn-cart-delete {
+  background: transparent;
+  border: none;
+  color: var(--sm-text-dim);
+  cursor: pointer;
+  padding: 6px;
+  font-size: 0.85rem;
+  transition: var(--sm-transition);
+}
+
+.btn-cart-delete:hover {
+  color: var(--sm-danger);
+  transform: scale(1.1);
+}
+
+/* ── Order Summary Card ────────────────────────────────────── */
+.order-summary-card {
+  border-radius: var(--sm-radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: sticky;
+  top: 90px;
+}
+
+.summary-heading {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.summary-line {
+  font-size: 0.92rem;
+}
+
+.total-label {
+  font-family: var(--sm-font-heading);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.total-amount {
+  font-family: var(--sm-font-heading);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--sm-success-light);
+}
+
+.promo-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sm-border);
+  border-radius: var(--sm-radius-md);
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.promo-input:focus {
+  border-color: var(--sm-primary-light);
+}
+
+/* ── Checkout Modal ────────────────────────────────────────── */
+.checkout-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 4, 10, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 2050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.checkout-modal-card {
+  width: 100%;
+  max-width: 620px;
+  border-radius: var(--sm-radius-xl);
+  border: 1px solid rgba(124, 92, 252, 0.35);
+  background: rgba(19, 16, 38, 0.98);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.btn-close-modal {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--sm-transition);
+}
+
+.btn-close-modal:hover {
+  background: var(--sm-danger);
+}
+
+.modal-field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sm-text-dim);
+  margin-bottom: 6px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sm-border);
+  border-radius: var(--sm-radius-md);
+  color: #fff;
+  font-size: 0.88rem;
+  outline: none;
+  font-family: var(--sm-font-body);
+}
+
+.modal-input:focus {
+  border-color: var(--sm-primary-light);
+  box-shadow: 0 0 15px rgba(124, 92, 252, 0.3);
+}
+
+.order-success-icon {
+  font-size: 3.5rem;
+}
+
+.order-receipt-box {
+  border-radius: var(--sm-radius-md);
+  border: 1px solid var(--sm-border);
+}

@@ -1,0 +1,12 @@
+/* ══════════════════════════════════════════════════════════════
+   App.css — Global page layout styles
+   ══════════════════════════════════════════════════════════════ */
+
+.app-main {
+  min-height: 100vh;
+}
+
+/* ── Shared section utility ────────────────────────────────── */
+.text-primary-custom { color: var(--sm-primary-light) !important; }
+.text-accent-custom { color: var(--sm-accent) !important; }
+.text-success-custom { color: var(--sm-success) !important; }
