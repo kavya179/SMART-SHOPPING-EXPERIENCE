@@ -177,3 +177,176 @@
 .max-w-500 {
   max-width: 520px;
 }
+
+/* ── Best Pick Banner ────────────────────────────────────── */
+.compare-best-pick-banner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 28px;
+  border-left: 4px solid var(--sm-gold);
+  background: rgba(189, 135, 81, 0.04);
+}
+
+.compare-bp-icon { font-size: 2rem; flex-shrink: 0; }
+
+.compare-bp-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sm-text-muted);
+  margin-bottom: 4px;
+}
+
+.compare-bp-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sm-text);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compare-bp-badge {
+  background: rgba(189, 135, 81, 0.12);
+  color: var(--sm-gold);
+  border-radius: var(--sm-radius-pill);
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Best Pick column highlight */
+.best-pick-col {
+  background: rgba(189, 135, 81, 0.04) !important;
+  border: 2px solid rgba(189, 135, 81, 0.3) !important;
+}
+
+.best-pick-crown {
+  background: linear-gradient(135deg, var(--sm-gold), #d4a45a);
+  color: white;
+  border-radius: var(--sm-radius-pill);
+  padding: 4px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+/* ── Value Score ─────────────────────────────────────────── */
+.compare-value-score-wrap { padding: 4px 0; }
+
+.compare-value-score {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--sm-text-muted);
+  margin-bottom: 6px;
+}
+
+.compare-value-score.best-value { color: var(--sm-primary); }
+
+.value-best-tag {
+  font-size: 0.65rem;
+  background: rgba(168, 111, 125, 0.12);
+  color: var(--sm-primary);
+  border-radius: var(--sm-radius-pill);
+  padding: 2px 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.compare-value-bar-track {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.compare-value-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sm-primary), var(--sm-accent));
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* ── Ingredient Overlap ──────────────────────────────────── */
+.compare-overlap-card { overflow: hidden; }
+
+.compare-overlap-title {
+  font-family: var(--sm-font-heading);
+  font-weight: 400;
+  font-size: 1.2rem;
+  color: var(--sm-text-heading);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.compare-overlap-section { }
+
+.compare-overlap-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.compare-overlap-label.shared { color: var(--sm-primary); }
+.compare-overlap-label.unique { color: var(--sm-gold); }
+
+.compare-overlap-tip {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--sm-text-muted);
+}
+
+.compare-ing-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.compare-ing-chip {
+  border-radius: var(--sm-radius-pill);
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.compare-ing-chip.shared {
+  background: rgba(168, 111, 125, 0.1);
+  color: var(--sm-primary);
+  border: 1px solid rgba(168, 111, 125, 0.2);
+}
+
+.compare-ing-chip.unique {
+  background: rgba(189, 135, 81, 0.1);
+  color: var(--sm-gold);
+  border: 1px solid rgba(189, 135, 81, 0.2);
+}
+
+.compare-no-overlap {
+  font-size: 0.85rem;
+  color: var(--sm-text-muted);
+  padding: 12px 14px;
+  background: rgba(168, 111, 125, 0.04);
+  border-radius: var(--sm-radius-md);
+  border-left: 3px solid var(--sm-border);
+  display: flex;
+  align-items: center;
+}
+
+.compare-overlap-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sm-border);
+}

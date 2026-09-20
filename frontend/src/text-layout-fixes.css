@@ -1,0 +1,140 @@
+/* Global text-overlap protection: keep content readable at every width. */
+*,*::before,*::after{min-width:0}
+body{overflow-x:hidden}
+img{max-width:100%}
+button,a,input,select,textarea{max-width:100%}
+
+/* Navigation */
+.nav-shell{min-width:0}
+.brand-mark,.nav-search,.main-nav{min-width:0}
+.nav-search input{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.main-nav>a{white-space:normal;text-align:center;line-height:1.25}
+
+/* Shared page typography */
+.catalog-page-wrapper h1,.catalog-page-wrapper h2,.catalog-page-wrapper h3,.catalog-page-wrapper h4,
+.detail-page-wrapper h1,.detail-page-wrapper h2,.detail-page-wrapper h3,.detail-page-wrapper h4,
+.cart-page-wrapper h1,.cart-page-wrapper h2,.cart-page-wrapper h3,.cart-page-wrapper h4,
+.wishlist-page-wrapper h1,.wishlist-page-wrapper h2,.wishlist-page-wrapper h3,.wishlist-page-wrapper h4,
+.compare-page-wrapper h1,.compare-page-wrapper h2,.compare-page-wrapper h3,.compare-page-wrapper h4,
+.quiz-page-wrapper h1,.quiz-page-wrapper h2,.quiz-page-wrapper h3,.quiz-page-wrapper h4{overflow-wrap:anywhere;word-break:normal;line-height:1.15}
+.catalog-page-wrapper p,.detail-page-wrapper p,.cart-page-wrapper p,.wishlist-page-wrapper p,.compare-page-wrapper p,.quiz-page-wrapper p{overflow-wrap:anywhere;line-height:1.55}
+
+/* Catalog */
+.catalog-hero-header{overflow:visible!important}
+.catalog-main-sub{max-width:620px}
+.catalog-header-stats{display:flex;flex-wrap:wrap;gap:12px!important}
+.catalog-header-stats>*{min-width:120px;flex:1 1 120px}
+.category-pills-row{display:flex;flex-wrap:wrap;gap:8px!important;white-space:normal!important}
+.cat-pill-btn{white-space:normal!important;line-height:1.25}
+.filter-sidebar{overflow:visible!important}
+.filter-section-title,.filter-panel-heading,.sort-label{white-space:normal!important}
+.filter-text-input,.filter-dropdown-select,.filter-sort-select{min-width:0;max-width:100%;white-space:normal}
+.skin-pill-group,.price-presets-group{display:flex;flex-wrap:wrap;gap:7px!important}
+.skin-pill-btn,.price-preset-pill{white-space:normal!important;line-height:1.2}
+.checkbox-custom-label{align-items:flex-start;line-height:1.35}
+.checkbox-text{overflow-wrap:anywhere}
+.catalog-toolbar{min-width:0}
+.results-summary{min-width:0;overflow-wrap:anywhere}
+.results-text{white-space:normal!important}
+.catalog-page-wrapper .row> [class*="col-"]{min-width:0}
+.catalog-page-wrapper .product-card-wrap{min-width:0}
+
+/* Product cards: never clip product names or ingredient labels. */
+.luxury-product-card,.luxury-card-body{min-width:0;overflow:visible}
+.luxury-card-title{overflow-wrap:anywhere;word-break:normal;display:block;line-height:1.25;min-height:2.5em}
+.luxury-card-brand,.card-actives-tag,.card-cat-label,.card-skin-badge{overflow-wrap:anywhere;white-space:normal;line-height:1.3}
+.card-actives-tag{display:block;overflow:visible;text-overflow:clip}
+.luxury-card-footer{gap:10px;flex-wrap:wrap}
+.price-stack{min-width:0;display:flex;flex-wrap:wrap;align-items:baseline}
+
+/* Product detail */
+.detail-page-wrapper{overflow:visible}
+.detail-content-box,.detail-gallery-container,.detail-info-panel{min-width:0;overflow:visible!important}
+.detail-product-title{overflow-wrap:anywhere;word-break:normal;line-height:1.12}
+.detail-brand-badge,.detail-description-text,.detail-price-panel,.smartmatch-insight-box,.detail-info-panel{overflow-wrap:anywhere}
+.detail-actions-row{min-width:0}
+.detail-actions-row>*{max-width:100%}
+.insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.active-ingredient-chip,.concern-link-chip{white-space:normal;overflow-wrap:anywhere}
+.full-inci-text,.usage-text,.caution-text{overflow-wrap:anywhere;word-break:break-word}
+
+/* Cart, wishlist, compare */
+.cart-page-wrapper,.wishlist-page-wrapper,.compare-page-wrapper{overflow:visible}
+.cart-header,.cart-items-card,.cart-summary-card,.wishlist-header,.wishlist-empty-card,.compare-header,.compare-matrix-card{min-width:0;overflow:visible!important}
+.cart-table,.compare-table{table-layout:fixed;width:100%}
+.cart-table th,.cart-table td,.compare-table th,.compare-table td{white-space:normal!important;overflow-wrap:anywhere;word-break:normal;vertical-align:middle}
+.cart-table th:first-child,.cart-table td:first-child{width:48%}
+.cart-item-name,.cart-item-cat,.compare-prod-name,.compare-brand,.compare-cat-tag,.spec-text,.spec-label{white-space:normal!important;overflow-wrap:anywhere;line-height:1.35}
+.cart-item-thumbnail{flex:0 0 auto}
+.compare-prod-img{max-width:100%;object-fit:cover}
+.compare-prod-head{min-width:0}
+.compare-table .product-col{min-width:0}
+
+/* Quiz */
+.quiz-header,.quiz-step-card,.quiz-option-card,.results-hero-card,.matched-product-card{min-width:0;overflow:visible!important}
+.step-question-title,.step-question-desc,.option-name,.option-desc,.matched-prod-title,.matched-prod-brand,.matched-prod-cat{white-space:normal!important;overflow-wrap:anywhere;line-height:1.35}
+.quiz-option-card{height:auto!important;min-height:145px}
+.quiz-option-card .d-flex{min-width:0;align-items:flex-start!important}
+.quiz-option-card .option-name,.quiz-option-card .option-desc{display:block}
+.option-desc{max-width:100%}
+.quiz-nav-row{flex-wrap:wrap;row-gap:14px}
+.quiz-nav-row>*{max-width:100%}
+.quiz-summary-box{overflow-wrap:anywhere}
+
+/* Footer and assistant */
+.luxury-footer,.footer-top-card,.footer-brand-desc,.footer-newsletter-sub,.prototype-info-card{min-width:0;overflow:visible}
+.footer-subscribe-form{min-width:0}
+.footer-email-input{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.footer-link-list a{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+.faq-assistant-shell,.faq-messages-container,.faq-bubble,.faq-ref-card{min-width:0;overflow-wrap:anywhere}
+.faq-chip{white-space:normal!important;height:auto!important;line-height:1.25}
+
+@media (max-width: 900px){
+  .nav-shell{gap:16px}
+  .main-nav{gap:12px}
+  .catalog-header-stats>*{flex-basis:calc(33.333% - 12px)}
+  .detail-actions-row{align-items:stretch!important}
+}
+@media (max-width: 700px){
+  .app-main{padding-top:68px}
+  .catalog-page-wrapper,.detail-page-wrapper,.cart-page-wrapper,.wishlist-page-wrapper,.compare-page-wrapper,.quiz-page-wrapper{padding-left:16px;padding-right:16px}
+  .catalog-page-wrapper .container,.detail-page-wrapper .container,.cart-page-wrapper .container,.wishlist-page-wrapper .container,.compare-page-wrapper .container,.quiz-page-wrapper .container{padding-left:0;padding-right:0}
+  .catalog-header-stats>*{flex:1 1 calc(50% - 8px);min-width:0}
+  .catalog-toolbar{align-items:stretch!important}
+  .catalog-toolbar>div{width:100%}
+  .filter-sort-select{width:100%}
+  .cart-table,.compare-table{font-size:.78rem}
+  .cart-table th:first-child,.cart-table td:first-child{width:44%}
+  .quiz-option-card{min-height:0;padding:16px!important}
+  .insight-grid{grid-template-columns:1fr}
+  .footer-subscribe-form{border-radius:16px;flex-wrap:wrap;padding:10px}
+  .footer-email-input{flex:1 1 100%;height:34px}
+  .footer-sub-btn{width:100%}
+}
+@media (max-width: 420px){
+  .catalog-header-stats>*{flex-basis:100%}
+  .hero-actions,.cta-actions{align-items:stretch}
+  .hero-actions .button,.hero-actions .text-link{justify-content:center}
+  .luxury-card-title{font-size:16px}
+  .cart-table th,.cart-table td,.compare-table th,.compare-table td{padding:8px 4px}
+}
+
+/* Shop collection: force compact, consistent product tiles even if Bootstrap's grid is unavailable or overridden. */
+.catalog-page-wrapper .row.g-3.g-md-4{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px!important;margin-left:0;margin-right:0}
+.catalog-page-wrapper .row.g-3.g-md-4>[class*="col-"]{width:auto!important;max-width:none!important;flex:none!important;padding-left:0;padding-right:0;min-width:0}
+.catalog-page-wrapper .product-card-wrap{width:100%;max-width:100%}
+.catalog-page-wrapper .luxury-product-card{width:100%;display:block}
+.catalog-page-wrapper .card-img-container{width:100%;min-height:220px}
+.catalog-page-wrapper .luxury-card-body{width:100%}
+
+/* SmartMatch: make the signature feature feel like a guided, premium discovery experience. */
+.quiz-page-wrapper{background:radial-gradient(circle at 12% 0%,#f3e4e1 0,transparent 31%),radial-gradient(circle at 94% 18%,#eee5f1 0,transparent 28%),#fbf8f3!important}
+.quiz-header{position:relative;isolation:isolate;overflow:hidden!important;padding:52px 32px 38px!important;border-radius:28px!important;background:linear-gradient(135deg,#4b3944 0%,#684956 54%,#a96d7a 100%)!important;color:#fff!important;box-shadow:0 22px 42px rgba(74,48,55,.16)!important}
+.quiz-header:before,.quiz-header:after{content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:-1}.quiz-header:before{width:360px;height:360px;right:-100px;top:-230px;border:1px solid rgba(255,255,255,.23);box-shadow:0 0 0 32px rgba(255,255,255,.04),0 0 0 64px rgba(255,255,255,.035)}.quiz-header:after{width:170px;height:170px;left:-70px;bottom:-110px;background:rgba(255,255,255,.08)}
+.quiz-header .badge-violet{background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.24)!important;color:#fff!important}
+.quiz-title{font-family:Georgia,serif!important;font-size:clamp(38px,5vw,64px)!important;font-weight:400!important;letter-spacing:-.055em!important;color:#fff!important;margin:10px 0 12px!important;line-height:1!important}.quiz-title .gradient-text{color:#f4c8c3!important;background:none!important;-webkit-text-fill-color:initial!important;font-style:italic}.quiz-subtitle{max-width:560px;margin:0 auto;color:#ead9dd!important;line-height:1.65!important;font-size:15px!important}.quiz-progress-container{max-width:520px!important;text-align:left}.quiz-progress-container .text-muted{color:#f2dfe2!important}.progress-track{height:9px!important;background:rgba(255,255,255,.2)!important;border:1px solid rgba(255,255,255,.18);border-radius:99px!important}.progress-fill{background:linear-gradient(90deg,#f5c3b9,#fff1df)!important;border-radius:99px!important;box-shadow:0 0 14px rgba(255,222,198,.55)}
+.quiz-step-card{max-width:980px!important;border-radius:28px!important;padding:38px!important;box-shadow:0 18px 42px rgba(74,48,55,.08)!important}.step-question-title{font-family:Georgia,serif!important;font-size:clamp(26px,3vw,38px)!important;font-weight:400!important;letter-spacing:-.04em!important;color:#3f2e36!important;line-height:1.1!important;margin-bottom:10px}.step-question-desc{color:#8e8187!important;margin-bottom:26px!important}
+.quiz-step-card .row.g-3{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px!important;margin-left:0;margin-right:0}.quiz-step-card .row.g-3>[class*="col-"]{width:auto!important;max-width:none!important;flex:none!important;padding:0!important}.quiz-step-card .row.g-3.mb-4{grid-template-columns:repeat(2,minmax(0,1fr))}.quiz-option-card{height:100%!important;min-height:152px!important;border-radius:18px!important;border:1px solid #eaded9!important;background:linear-gradient(145deg,#fffdfb,#fbf3ef)!important;padding:22px!important;box-shadow:0 8px 18px rgba(74,48,55,.04)!important;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease,background .22s ease!important}.quiz-option-card:after{content:"↗";float:right;color:#bd7889;font-size:17px;opacity:.5;transition:transform .2s ease,opacity .2s ease}.quiz-option-card:hover{transform:translateY(-5px)!important;border-color:#d39da5!important;box-shadow:0 16px 28px rgba(74,48,55,.11)!important;background:#fff!important}.quiz-option-card:hover:after{transform:translate(3px,-3px);opacity:1}.quiz-option-card.active{background:linear-gradient(145deg,#f3dcd8,#ead4df)!important;border-color:#b97483!important;box-shadow:0 14px 26px rgba(169,109,122,.2)!important}.option-icon-box{width:48px!important;height:48px!important;border-radius:15px!important;background:#f3dfda!important;color:#a96d7a!important;margin-bottom:18px!important}.quiz-option-card.active .option-icon-box{background:#b97583!important;color:#fff!important}.option-name{font-family:Georgia,serif!important;font-size:20px!important;font-weight:400!important;color:#44323a!important;line-height:1.15!important}.option-desc{display:block!important;color:#8e8187!important;font-size:12px!important;line-height:1.45!important;margin-top:7px}.quiz-nav-row{border-top-color:#eaded9!important}.quiz-nav-row .btn-glow{background:#332631!important}.quiz-nav-row .btn-rose{background:#bd7889!important;box-shadow:0 9px 18px rgba(189,120,137,.22)}
+.results-hero-card{background:linear-gradient(135deg,#4b3944,#8b5c6a)!important;color:#fff!important}.results-main-title{font-family:Georgia,serif!important;font-weight:400!important;color:#fff!important}.results-main-sub{color:#f0dfe1!important}
+@media(max-width:991px){.catalog-page-wrapper .row.g-3.g-md-4{grid-template-columns:repeat(2,minmax(0,1fr))}.quiz-step-card .row.g-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.catalog-page-wrapper .row.g-3.g-md-4{grid-template-columns:1fr;gap:14px!important}.catalog-page-wrapper .card-img-container{min-height:0}.quiz-header{padding:38px 20px 30px!important}.quiz-step-card{padding:22px!important}.quiz-step-card .row.g-3,.quiz-step-card .row.g-3.mb-4{grid-template-columns:1fr}.quiz-option-card{min-height:126px!important;padding:18px!important}.option-icon-box{margin-bottom:12px!important}.option-name{font-size:18px!important}}

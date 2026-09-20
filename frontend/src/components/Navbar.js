@@ -98,6 +98,46 @@ function Navbar() {
           <Link to="/quiz" className="nav-match" onClick={() => setMenuOpen(false)}>
             <i className="bi bi-stars" /> Find my match
           </Link>
+          <Link to="/dashboard" className={`${active('/dashboard') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+            Dashboard
+          </Link>
+
+          {/* Beauty Tools Dropdown */}
+          <div className="nav-tools-dropdown">
+            <button className="nav-tools-trigger" aria-label="Beauty tools menu">
+              <i className="bi bi-grid-3x3-gap" /> Tools <i className="bi bi-chevron-down tools-chevron" />
+            </button>
+            <div className="nav-tools-menu">
+              <Link to="/routine" className="nav-tools-item" onClick={() => setMenuOpen(false)}>
+                <i className="bi bi-calendar3 nav-tool-icon" />
+                <div>
+                  <strong>Routine Builder</strong>
+                  <small>Build your AM &amp; PM routine</small>
+                </div>
+              </Link>
+              <Link to="/ingredient-check" className="nav-tools-item" onClick={() => setMenuOpen(false)}>
+                <i className="bi bi-shield-check nav-tool-icon" />
+                <div>
+                  <strong>Ingredient Checker</strong>
+                  <small>Check ingredient conflicts</small>
+                </div>
+              </Link>
+              <Link to="/compare" className="nav-tools-item" onClick={() => setMenuOpen(false)}>
+                <i className="bi bi-intersect nav-tool-icon" />
+                <div>
+                  <strong>Compare Products</strong>
+                  <small>Side-by-side evaluation</small>
+                </div>
+              </Link>
+              <Link to="/reviews" className="nav-tools-item" onClick={() => setMenuOpen(false)}>
+                <i className="bi bi-bar-chart nav-tool-icon" />
+                <div>
+                  <strong>Review Insights</strong>
+                  <small>Rating &amp; catalog analysis</small>
+                </div>
+              </Link>
+            </div>
+          </div>
 
           <div className="nav-tools">
             <Link to="/wishlist" aria-label="Wishlist" title="Wishlist">

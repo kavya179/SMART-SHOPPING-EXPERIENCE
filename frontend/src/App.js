@@ -9,11 +9,16 @@ import SmartMatchQuiz from './pages/SmartMatchQuiz';
 import ComparePage from './pages/ComparePage';
 import WishlistPage from './pages/WishlistPage';
 import CartPage from './pages/CartPage';
+import IngredientChecker from './pages/IngredientChecker';
+import RoutineBuilder from './pages/RoutineBuilder';
+import ReviewInsights from './pages/ReviewInsights';
+import Dashboard from './pages/Dashboard';
 import CompareDock from './components/CompareDock';
 import FaqAssistant from './components/FaqAssistant';
 import { ShopProvider } from './context/ShopContext';
 import './App.css';
 import './theme-fixes.css';
+import './text-layout-fixes.css';
 
 function App() {
   return (
@@ -31,6 +36,10 @@ function App() {
               <Route path="/compare" element={<ComparePage />} />
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/cart" element={<CartPage />} />
+              <Route path="/ingredient-check" element={<IngredientChecker />} />
+              <Route path="/routine" element={<RoutineBuilder />} />
+              <Route path="/reviews" element={<ReviewInsights />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Routes>
           </main>
           <CompareDock />

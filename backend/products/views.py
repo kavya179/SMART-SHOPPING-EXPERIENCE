@@ -242,3 +242,130 @@ def faq_query(request):
 
     return Response(response_data, status=status.HTTP_200_OK)
 
+
+@api_view(['POST'])
+def ingredient_check(request):
+    """
+    POST endpoint for the Ingredient Safety Checker.
+    Checks a list of ingredient names for known interaction conflicts.
+
+    Expected JSON payload:
+      - ingredients: list of strings (ingredient names to check)
+
+    Returns:
+      - overall_safety, conflicts (with severity + reason), safe_pairs, disclaimer
+    """
+    data = request.data
+    if not isinstance(data, dict):
+        return Response(
+            {'error': 'Invalid request body. Expected JSON object with an ingredients list.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    ingredients = data.get('ingredients', [])
+    if not isinstance(ingredients, list):
+        return Response(
+            {'error': 'The ingredients field must be a list of strings.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if len(ingredients) == 0:
+        return Response(
+            {'error': 'Please provide at least one ingredient name to check.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if len(ingredients) > 15:
+        return Response(
+            {'error': 'Maximum 15 ingredients can be checked at once.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    from .services.ingredient_checker import IngredientChecker
+    checker = IngredientChecker(ingredients)
+    result = checker.check()
+
+    return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def build_routine(request):
+    """
+    POST endpoint for the Beauty Routine Builder.
+    Generates an AM + PM skincare routine using real products from SQLite.
+
+    Expected JSON payload:
+      - skin_type: string (e.g. 'oily', 'dry', 'combination', 'sensitive', 'all')
+      - concern: string (e.g. 'acne', 'brightening', 'hydration', 'anti-aging', 'redness')
+      - budget_max: number (optional, max price per product in INR)
+
+    Returns:
+      - morning_routine, evening_routine (ordered steps with real product data)
+    """
+    data = request.data
+    if not isinstance(data, dict):
+        return Response(
+            {'error': 'Invalid request body. Expected JSON object.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    skin_type = data.get('skin_type')
+    concern = data.get('concern')
+
+    if not skin_type:
+        return Response(
+            {'error': 'skin_type is required. Valid values: oily, dry, combination, sensitive, all'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if not concern:
+        return Response(
+            {'error': 'concern is required. Valid values: acne, brightening, hydration, anti-aging, redness, dark spots, dryness, general'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    VALID_SKIN_TYPES = {'oily', 'dry', 'combination', 'sensitive', 'all'}
+    if skin_type not in VALID_SKIN_TYPES:
+        return Response(
+            {'error': f'Invalid skin_type "{skin_type}". Valid values: {", ".join(sorted(VALID_SKIN_TYPES))}'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    budget_raw = data.get('budget_max')
+    budget_max = None
+    if budget_raw is not None and budget_raw != '':
+        try:
+            budget_max = float(budget_raw)
+            if budget_max < 0:
+                return Response(
+                    {'error': 'budget_max cannot be negative.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        except (ValueError, TypeError):
+            return Response(
+                {'error': 'budget_max must be a valid number.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    from .services.routine_builder import RoutineBuilder
+    builder = RoutineBuilder(skin_type=skin_type, concern=concern, budget_max=budget_max)
+    result = builder.build()
+
+    return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def review_insights(request):
+    """
+    GET endpoint for the Review Insight Analyzer.
+    Returns catalog-wide rating distribution, category breakdown, and top products.
+
+    IMPORTANT: No review text exists in the database. This endpoint works exclusively
+    with Product.rating (Decimal) and Product.review_count (Integer).
+    Sentiment analysis and theme extraction are NOT available.
+    """
+    from .services.review_analyzer import ReviewInsightAnalyzer
+    analyzer = ReviewInsightAnalyzer()
+    result = analyzer.analyze()
+    return Response(result, status=status.HTTP_200_OK)
+

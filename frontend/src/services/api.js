@@ -89,4 +89,39 @@ export async function askFaqAssistant(question, productId = null, contextProduct
   return response.json();
 }
 
+// ── Ingredient Safety Checker ──────────────────────────────────
+export async function checkIngredients(ingredients) {
+  const response = await fetch(`${API_BASE}/products/ingredient-check/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ingredients }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Ingredient check failed with status ${response.status}`);
+  }
+  return response.json();
+}
+
+// ── Beauty Routine Builder ─────────────────────────────────────
+export async function buildRoutine(skinType, concern, budgetMax = null) {
+  const payload = { skin_type: skinType, concern };
+  if (budgetMax) payload.budget_max = budgetMax;
+  const response = await fetch(`${API_BASE}/products/routine/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Routine builder failed with status ${response.status}`);
+  }
+  return response.json();
+}
+
+// ── Review Insight Analyzer ────────────────────────────────
+export function fetchReviewInsights() {
+  return apiFetch('/products/review-insights/');
+}
+
 export default apiFetch;

@@ -80,30 +80,36 @@ SMART-SHOPPING-EXPERIENCE/
 
 ---
 
-## 🚀 Quick Start (Windows PowerShell)
+## 🚀 Quick Start (Windows PowerShell / CMD)
 
-### 1. Terminal 1 — Backend (Django on port 8000)
+### Option A: One-Click Launcher (Recommended)
+Simply double-click or run:
 ```powershell
-cd SMART-SHOPPING-EXPERIENCE\backend
+.\start_joyory.bat
+```
+This automatically launches both the **Django Backend** (`http://localhost:8000`) and the **React Frontend** (`http://localhost:3000`) in separate windows.
+
+---
+
+### Option B: Manual Startup
+
+#### 1. Terminal 1 — Backend (Django on port 8000)
+```powershell
+cd backend
 .\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
 python manage.py migrate
 python manage.py seed_products
-
-# Optional: Retrain / evaluate the FAQ intent classifier
-python products\scripts\train_faq_model.py
 
 # Run unit tests
 python manage.py test
 
 # Start backend server
-python manage.py runserver
+python manage.py runserver 8000
 ```
 
-### 2. Terminal 2 — Frontend (React on port 3000)
+#### 2. Terminal 2 — Frontend (React on port 3000)
 ```powershell
-cd SMART-SHOPPING-EXPERIENCE\frontend
-npm install
+cd frontend
 npm start
 ```
 Visit **`http://localhost:3000`** in your browser.
@@ -113,10 +119,10 @@ Visit **`http://localhost:3000`** in your browser.
 ## 🤖 Beauty FAQ Assistant Architecture (Hybrid NLP)
 
 The Beauty FAQ Assistant solves the problem of repetitive, generic answers by combining:
-1. **Machine Learning Intent Classifier**: Lightweight `TfidfVectorizer(ngram_range=(1, 2))` + `LogisticRegression` pipeline classifying 10 distinct customer intents (`usage_instructions`, `ingredients`, `product_purpose`, `safety_and_cautions`, `price_and_discount`, `availability_and_stock`, `comparison_and_alternatives`, `skin_type_recommendation`, `platform_policy`, `medical_disclaimer_fallback`).
+1. **Machine Learning Intent Classifier**: Lightweight `TfidfVectorizer(ngram_range=(1, 2))` + `LogisticRegression` pipeline classifying 14 distinct customer intents (`greeting`, `gratitude`, `farewell`, `usage_instructions`, `ingredients`, `product_purpose`, `safety_and_cautions`, `price_and_discount`, `budget_search`, `availability_and_stock`, `comparison_and_alternatives`, `skin_type_recommendation`, `platform_policy`, `medical_disclaimer_fallback`).
 2. **Semantic Question-Answer Retrieval**: TF-IDF cosine similarity index over verified platform questions with a strict similarity threshold to prevent false positives.
-3. **Product Entity Extraction**: Automatically extracts active product context from Product Detail Pages or entity mentions in the query.
-4. **Dynamic Context-Aware Response Generation**: Formats custom, non-repetitive answers addressing the exact intent, referencing verified database attributes, and displaying intent category badges (`🏷️ Usage Directions`, `🏷️ Ingredients & Actives`, `🏷️ Safety & Patch Test`).
+3. **Product Entity & Pronoun Context Tracking**: Automatically extracts product context and resolves follow-ups (*"What is its price?"*, *"What are its ingredients?"*) via `context_product_id`.
+4. **Live SQLite Catalog Grounding**: Real-time attribute formatting (discounted price calculation, INCI list, routine directions, and budget queries).
 5. **Strict Non-Medical Guardrails**: Programmatically intercepts medical treatment queries and attaches clear non-medical disclaimers.
 
 ---
@@ -136,7 +142,7 @@ The Beauty FAQ Assistant solves the problem of repetitive, generic answers by co
 
 ## 🧪 Automated Testing
 ```powershell
-cd SMART-SHOPPING-EXPERIENCE\backend
+cd backend
 .\venv\Scripts\python.exe manage.py test
 ```
-**Result**: 26 / 26 Unit Tests Passing (100% OK, 0 errors, 0 failures).
+**Result**: **36 / 36 Unit Tests Passing** (100% OK, 0 errors, 0 failures).

@@ -450,4 +450,323 @@ class FaqAssistantTests(TestCase):
         self.assertIn('error', response.data)
 
 
+# ══════════════════════════════════════════════════════════════
+#  PHASE 5: Review Insight Analyzer Tests
+# ══════════════════════════════════════════════════════════════
 
+class ReviewAnalyzerUnitTest(TestCase):
+    """Unit tests for ReviewInsightAnalyzer service."""
+
+    def setUp(self):
+        # Create test products
+        Product.objects.create(
+            name='Test Serum',
+            brand='TestBrand',
+            category='skincare',
+            price=Decimal('599.00'),
+            rating=Decimal('4.80'),
+            review_count=350,
+            skin_type='all',
+            availability='in_stock',
+        )
+        Product.objects.create(
+            name='Test Moisturizer',
+            brand='TestBrand',
+            category='skincare',
+            price=Decimal('399.00'),
+            rating=Decimal('4.20'),
+            review_count=80,
+            skin_type='dry',
+            availability='in_stock',
+        )
+        Product.objects.create(
+            name='Test Lipstick',
+            brand='MakeupBrand',
+            category='makeup',
+            price=Decimal('299.00'),
+            rating=Decimal('3.80'),
+            review_count=25,
+            skin_type='all',
+            availability='in_stock',
+        )
+
+    def test_analyzer_returns_ok(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        self.assertEqual(result['status'], 'ok')
+        self.assertTrue(result['data_available'])
+
+    def test_analyzer_catalog_summary(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        summary = result['catalog_summary']
+        self.assertEqual(summary['total_products_analyzed'], 3)
+        self.assertEqual(summary['total_review_count'], 455)
+        self.assertGreater(summary['average_catalog_rating'], 0)
+
+    def test_rating_distribution_sums_correctly(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        total = sum(band['count'] for band in result['rating_distribution'])
+        self.assertEqual(total, 3)
+
+    def test_category_breakdown_present(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        cats = {c['category'] for c in result['category_breakdown']}
+        self.assertIn('skincare', cats)
+        self.assertIn('makeup', cats)
+
+    def test_top_products_structure(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        tp = result['top_products']
+        self.assertIn('top_rated', tp)
+        self.assertIn('most_reviewed', tp)
+        self.assertIn('best_value', tp)
+        self.assertGreater(len(tp['top_rated']), 0)
+
+    def test_confidence_breakdown_present(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        cb = result['confidence_breakdown']
+        self.assertIsInstance(cb, list)
+        self.assertGreater(len(cb), 0)
+
+    def test_data_disclaimer_present(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        self.assertIn('data_disclaimer', result)
+        self.assertIn('review text', result['data_disclaimer'].lower())
+
+    def test_what_is_missing_present(self):
+        from .services.review_analyzer import ReviewInsightAnalyzer
+        result = ReviewInsightAnalyzer().analyze()
+        self.assertIn('what_is_missing', result)
+
+
+class ReviewInsightsAPITest(TestCase):
+    """Integration tests for the /api/products/review-insights/ endpoint."""
+
+    def setUp(self):
+        self.client = APIClient()
+        Product.objects.create(
+            name='API Test Product',
+            brand='TestBrand',
+            category='skincare',
+            price=Decimal('499.00'),
+            rating=Decimal('4.50'),
+            review_count=200,
+            skin_type='oily',
+            availability='in_stock',
+        )
+
+    def test_endpoint_returns_200(self):
+        response = self.client.get('/api/products/review-insights/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_endpoint_returns_ok_status(self):
+        response = self.client.get('/api/products/review-insights/')
+        self.assertEqual(response.data['status'], 'ok')
+
+    def test_endpoint_has_catalog_summary(self):
+        response = self.client.get('/api/products/review-insights/')
+        self.assertIn('catalog_summary', response.data)
+
+    def test_endpoint_has_rating_distribution(self):
+        response = self.client.get('/api/products/review-insights/')
+        self.assertIn('rating_distribution', response.data)
+
+    def test_endpoint_has_category_breakdown(self):
+        response = self.client.get('/api/products/review-insights/')
+        self.assertIn('category_breakdown', response.data)
+
+    def test_endpoint_has_top_products(self):
+        response = self.client.get('/api/products/review-insights/')
+        self.assertIn('top_products', response.data)
+
+    def test_endpoint_includes_disclaimer(self):
+        response = self.client.get('/api/products/review-insights/')
+        self.assertIn('data_disclaimer', response.data)
+
+    def test_endpoint_method_not_allowed_post(self):
+        """Review insights is GET-only."""
+        response = self.client.post('/api/products/review-insights/', {}, format='json')
+        self.assertEqual(response.status_code, 405)
+
+
+# ══════════════════════════════════════════════════════════════
+#  PHASE 7: IngredientChecker Additional Tests
+# ══════════════════════════════════════════════════════════════
+
+class IngredientCheckerExtendedTest(TestCase):
+    """Extended tests for IngredientChecker to improve coverage."""
+
+    def test_safe_single_ingredient(self):
+        from .services.ingredient_checker import IngredientChecker
+        result = IngredientChecker(['Hyaluronic Acid']).check()
+        self.assertEqual(result['status'], 'ok')
+        self.assertEqual(result['overall_safety'], 'safe')
+        self.assertEqual(result['total_conflicts'], 0)
+
+    def test_high_severity_conflict(self):
+        from .services.ingredient_checker import IngredientChecker
+        # Retinol + Benzoyl Peroxide is a known high-severity conflict
+        result = IngredientChecker(['Retinol', 'Benzoyl Peroxide']).check()
+        self.assertEqual(result['status'], 'ok')
+        severities = [c['severity'] for c in result['conflicts']]
+        self.assertIn('high', severities)
+        self.assertEqual(result['overall_safety'], 'unsafe')
+
+    def test_case_insensitive_matching(self):
+        from .services.ingredient_checker import IngredientChecker
+        result = IngredientChecker(['vitamin c', 'RETINOL']).check()
+        self.assertGreater(result['total_conflicts'], 0)
+
+    def test_empty_ingredient_list(self):
+        from .services.ingredient_checker import IngredientChecker
+        result = IngredientChecker([]).check()
+        self.assertEqual(result['status'], 'error')
+
+    def test_disclaimer_always_present(self):
+        from .services.ingredient_checker import IngredientChecker
+        result = IngredientChecker(['Niacinamide']).check()
+        self.assertIn('disclaimer', result)
+
+    def test_safe_pairs_populated(self):
+        from .services.ingredient_checker import IngredientChecker
+        result = IngredientChecker(['Niacinamide', 'Hyaluronic Acid', 'Ceramides']).check()
+        self.assertIn('safe_pairs', result)
+
+
+# ══════════════════════════════════════════════════════════════
+#  PHASE 7: RoutineBuilder Additional Tests
+# ══════════════════════════════════════════════════════════════
+
+class RoutineBuilderExtendedTest(TestCase):
+    """Extended tests for RoutineBuilder service."""
+
+    def setUp(self):
+        Product.objects.create(
+            name='Routine Test Serum',
+            brand='TestBrand',
+            category='skincare',
+            price=Decimal('599.00'),
+            rating=Decimal('4.60'),
+            review_count=200,
+            skin_type='oily',
+            concern_tags='acne,oiliness',
+            key_ingredients='Niacinamide, Salicylic Acid',
+            availability='in_stock',
+        )
+
+    def test_routine_has_morning_and_evening(self):
+        from .services.routine_builder import RoutineBuilder
+        result = RoutineBuilder('oily', 'acne').build()
+        self.assertEqual(result['status'], 'ok')
+        self.assertIn('morning_routine', result)
+        self.assertIn('evening_routine', result)
+
+    def test_routine_steps_are_ordered(self):
+        from .services.routine_builder import RoutineBuilder
+        result = RoutineBuilder('dry', 'hydration').build()
+        steps = result['morning_routine']
+        step_nums = [s['step'] for s in steps]
+        self.assertEqual(step_nums, sorted(step_nums))
+
+    def test_all_skin_types_work(self):
+        from .services.routine_builder import RoutineBuilder
+        for skin_type in ['oily', 'dry', 'combination', 'sensitive', 'all']:
+            result = RoutineBuilder(skin_type, 'general').build()
+            self.assertEqual(result['status'], 'ok', f"Failed for skin_type={skin_type}")
+
+    def test_all_concerns_work(self):
+        from .services.routine_builder import RoutineBuilder
+        for concern in ['acne', 'brightening', 'hydration', 'anti-aging', 'general']:
+            result = RoutineBuilder('all', concern).build()
+            self.assertEqual(result['status'], 'ok', f"Failed for concern={concern}")
+
+    def test_disclaimer_present(self):
+        from .services.routine_builder import RoutineBuilder
+        result = RoutineBuilder('oily', 'acne').build()
+        self.assertIn('disclaimer', result)
+
+    def test_routine_tips_present(self):
+        from .services.routine_builder import RoutineBuilder
+        result = RoutineBuilder('oily', 'acne').build()
+        self.assertIn('routine_tips', result)
+
+    def test_total_products_found_is_integer(self):
+        from .services.routine_builder import RoutineBuilder
+        result = RoutineBuilder('all', 'general').build()
+        self.assertIsInstance(result['total_products_found'], int)
+
+
+# ══════════════════════════════════════════════════════════════
+#  PHASE 7: Ingredient Check API Endpoint Tests
+# ══════════════════════════════════════════════════════════════
+
+class IngredientCheckAPITest(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_endpoint_post_returns_200(self):
+        response = self.client.post('/api/products/ingredient-check/', {
+            'ingredients': ['Vitamin C', 'Niacinamide']
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_endpoint_get_not_allowed(self):
+        response = self.client.get('/api/products/ingredient-check/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_endpoint_missing_ingredients_field(self):
+        response = self.client.post('/api/products/ingredient-check/', {}, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_endpoint_empty_ingredients_list(self):
+        response = self.client.post('/api/products/ingredient-check/', {
+            'ingredients': []
+        }, format='json')
+        self.assertEqual(response.status_code, 400)
+
+
+# ══════════════════════════════════════════════════════════════
+#  PHASE 7: Routine Builder API Endpoint Tests
+# ══════════════════════════════════════════════════════════════
+
+class RoutineAPITest(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_endpoint_post_returns_200(self):
+        response = self.client.post('/api/products/routine/', {
+            'skin_type': 'oily',
+            'concern': 'acne',
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_endpoint_get_not_allowed(self):
+        response = self.client.get('/api/products/routine/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_endpoint_missing_skin_type(self):
+        response = self.client.post('/api/products/routine/', {
+            'concern': 'acne',
+        }, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_endpoint_missing_concern(self):
+        response = self.client.post('/api/products/routine/', {
+            'skin_type': 'oily',
+        }, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_endpoint_invalid_skin_type(self):
+        response = self.client.post('/api/products/routine/', {
+            'skin_type': 'alien',
+            'concern': 'acne',
+        }, format='json')
+        self.assertEqual(response.status_code, 400)
