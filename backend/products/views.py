@@ -57,14 +57,34 @@ def product_list(request):
             )
 
     # ── Free-text search ─────────────────────────────────────────
-    search = request.query_params.get('search')
+    search = request.query_params.get('search', '').strip()
     if search:
-        queryset = queryset.filter(
-            Q(name__icontains=search)
-            | Q(brand__icontains=search)
-            | Q(description__icontains=search)
-            | Q(key_ingredients__icontains=search)
+        # Normalize category synonyms e.g. "body care" -> "bodycare", "skin care" -> "skincare", "hair care" -> "haircare"
+        normalized_search = (
+            search.lower()
+            .replace('body care', 'bodycare')
+            .replace('skin care', 'skincare')
+            .replace('hair care', 'haircare')
+            .replace('nail care', 'nailcare')
         )
+
+        words = [w for w in search.split() if len(w) >= 2]
+        norm_words = [w for w in normalized_search.split() if len(w) >= 2]
+        all_terms = list(dict.fromkeys([search, normalized_search] + words + norm_words))
+
+        search_filter = Q()
+        for term in all_terms:
+            search_filter |= (
+                Q(name__icontains=term)
+                | Q(brand__icontains=term)
+                | Q(category__icontains=term)
+                | Q(description__icontains=term)
+                | Q(key_ingredients__icontains=term)
+                | Q(full_ingredients__icontains=term)
+                | Q(concern_tags__icontains=term)
+                | Q(skin_type__icontains=term)
+            )
+        queryset = queryset.filter(search_filter)
 
     # ── Concern-tag filter ───────────────────────────────────────
     concern = request.query_params.get('concern')
@@ -181,7 +201,8 @@ def faq_query(request):
 
     Expected JSON payload:
       - question: string (required)
-      - product_id: integer (optional)
+      - product_id: integer (optional, active PDP context)
+      - context_product_id: integer (optional, previous conversational turn context)
     """
     data = request.data
     if not isinstance(data, dict):
@@ -204,8 +225,19 @@ def faq_query(request):
         except (ValueError, TypeError):
             product_id = None
 
+    context_product_id = data.get('context_product_id')
+    if context_product_id is not None:
+        try:
+            context_product_id = int(context_product_id)
+        except (ValueError, TypeError):
+            context_product_id = None
+
     from .services.faq_assistant import ProductFaqAssistant
-    assistant = ProductFaqAssistant(question=question, product_id=product_id)
+    assistant = ProductFaqAssistant(
+        question=question,
+        product_id=product_id,
+        context_product_id=context_product_id
+    )
     response_data = assistant.answer_query()
 
     return Response(response_data, status=status.HTTP_200_OK)

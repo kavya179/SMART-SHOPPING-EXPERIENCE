@@ -86,6 +86,26 @@ class ProductAPITest(TestCase):
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['brand'], 'HairLux')
 
+    def test_search_multi_word_and_category_synonym(self):
+        # Create a bodycare product
+        Product.objects.create(
+            name='Cocoa Glow Nourishing Body Butter',
+            brand='SilkSkin',
+            category='bodycare',
+            description='Rich whipped body butter with pure cocoa butter.',
+            price=Decimal('499.00'),
+            skin_type='all',
+            concern_tags='dryness,glow',
+            key_ingredients='Cocoa Butter, Shea Butter',
+            full_ingredients='Aqua, Theobroma Cacao Seed Butter, Butyrospermum Parkii.',
+            availability='in_stock',
+        )
+        # Search with space "body care" -> matches category 'bodycare'
+        response = self.client.get('/api/products/?search=body%20care')
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(response.data['count'], 1)
+        self.assertEqual(response.data['results'][0]['category'], 'bodycare')
+
     def test_invalid_min_price(self):
         response = self.client.get('/api/products/?min_price=abc')
         self.assertEqual(response.status_code, 400)
@@ -233,6 +253,7 @@ class FaqAssistantTests(TestCase):
             category='skincare',
             description='Potent antioxidant serum.',
             price=Decimal('899.00'),
+            discount_percent=10,
             skin_type='all',
             concern_tags='dark spots,dullness,brightening',
             key_ingredients='Vitamin C, Hyaluronic Acid',
@@ -240,13 +261,16 @@ class FaqAssistantTests(TestCase):
             usage_instructions='Apply 3-4 drops in the morning on cleansed face before moisturizer and SPF.',
             caution_info='Perform patch test prior to first use. Slight tingling may occur. Use sunscreen during daytime.',
             availability='in_stock',
+            rating=Decimal('4.80'),
+            review_count=120,
         )
         self.cream = Product.objects.create(
             name='Ultra Hydration Cream',
             brand='AquaSoft',
             category='skincare',
             description='Moisturizer with ceramides for dry skin barrier repair.',
-            price=Decimal('500.00'),
+            price=Decimal('450.00'),
+            discount_percent=0,
             skin_type='dry',
             concern_tags='dryness,hydration,barrier repair',
             key_ingredients='Ceramides, Squalane',
@@ -254,7 +278,27 @@ class FaqAssistantTests(TestCase):
             usage_instructions='Apply generously over face and neck twice daily, morning and night.',
             caution_info='For external use only. Discontinue if persistent irritation occurs.',
             availability='in_stock',
+            rating=Decimal('4.60'),
+            review_count=85,
         )
+
+    def test_faq_greeting_social(self):
+        response = self.client.post('/api/faq/', {'question': 'Hello! How are you?'}, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertEqual(data['intent'], 'greeting')
+        self.assertIn('Joyory SmartMatch', data['answer'])
+        self.assertEqual(len(data['referenced_products']), 0)
+        self.assertTrue(len(data['suggested_questions']) > 0)
+
+    def test_faq_gratitude_and_farewell(self):
+        resp_thanks = self.client.post('/api/faq/', {'question': 'Thank you so much!'}, format='json')
+        self.assertEqual(resp_thanks.status_code, 200)
+        self.assertEqual(resp_thanks.data['intent'], 'gratitude')
+
+        resp_bye = self.client.post('/api/faq/', {'question': 'Goodbye, see you!'}, format='json')
+        self.assertEqual(resp_bye.status_code, 200)
+        self.assertEqual(resp_bye.data['intent'], 'farewell')
 
     def test_faq_ingredient_query(self):
         response = self.client.post('/api/products/faq/', {
@@ -268,6 +312,79 @@ class FaqAssistantTests(TestCase):
         self.assertEqual(data['referenced_products'][0]['name'], 'Radiance Vitamin C Serum')
         self.assertTrue(data['is_disclaimer_applicable'])
         self.assertIn('intent_label', data)
+
+    def test_faq_price_and_discount_query(self):
+        response = self.client.post('/api/products/faq/', {
+            'question': 'What is the price of Radiance Vitamin C Serum?'
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertIn('809.1', data['answer'])
+        self.assertEqual(data['context_product_id'], self.serum.id)
+        self.assertEqual(len(data['referenced_products']), 1)
+
+    def test_faq_budget_search(self):
+        response = self.client.post('/api/faq/', {
+            'question': 'Show me products under ₹500'
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertEqual(data['intent'], 'budget_search')
+        self.assertIn('Ultra Hydration Cream', data['answer'])
+        self.assertEqual(data['referenced_products'][0]['name'], 'Ultra Hydration Cream')
+
+    def test_faq_contextual_follow_up(self):
+        # First query sets context_product_id = self.serum.id
+        resp1 = self.client.post('/api/faq/', {
+            'question': 'Tell me about Radiance Vitamin C Serum'
+        }, format='json')
+        self.assertEqual(resp1.status_code, 200)
+        context_id = resp1.data.get('context_product_id')
+        self.assertEqual(context_id, self.serum.id)
+
+        # Follow-up query using pronoun "its price"
+        resp2 = self.client.post('/api/faq/', {
+            'question': 'What is its price?',
+            'context_product_id': context_id
+        }, format='json')
+        self.assertEqual(resp2.status_code, 200)
+        self.assertIn('Pricing & Availability for Radiance Vitamin C Serum', resp2.data['answer'])
+
+        # Follow-up query asking "what are its ingredients?"
+        resp3 = self.client.post('/api/faq/', {
+            'question': 'What are its ingredients?',
+            'context_product_id': context_id
+        }, format='json')
+        self.assertEqual(resp3.status_code, 200)
+        self.assertIn('Vitamin C, Hyaluronic Acid', resp3.data['answer'])
+
+    def test_faq_pronoun_without_context_prompts_clarification(self):
+        response = self.client.post('/api/faq/', {
+            'question': 'What is its price?'
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertFalse(data['found'])
+        self.assertIn('Which product are you referring to', data['answer'])
+
+    def test_faq_product_comparison(self):
+        response = self.client.post('/api/faq/', {
+            'question': 'Compare Radiance Vitamin C Serum and Ultra Hydration Cream'
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertEqual(data['intent'], 'comparison_and_alternatives')
+        self.assertIn('Formula Comparison', data['answer'])
+        self.assertEqual(len(data['referenced_products']), 2)
+
+    def test_faq_unfound_product(self):
+        response = self.client.post('/api/faq/', {
+            'question': 'What is the price of Loreal Revitalift Laser X3?'
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertFalse(data['found'])
+        self.assertIn('could not be found in our verified catalog', data['answer'])
 
     def test_faq_usage_query_for_product(self):
         response = self.client.post('/api/products/faq/', {
@@ -317,7 +434,7 @@ class FaqAssistantTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.data
         self.assertEqual(data['intent'], 'unavailable')
-        self.assertIn('not currently available in the Joyory product catalog', data['answer'])
+        self.assertIn('could not find specific catalog information', data['answer'])
         self.assertFalse(data['found'])
 
     def test_faq_empty_question(self):
@@ -331,5 +448,6 @@ class FaqAssistantTests(TestCase):
         response = self.client.post('/api/products/faq/', 'not-a-dict', format='json')
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', response.data)
+
 
 

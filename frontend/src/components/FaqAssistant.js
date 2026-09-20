@@ -4,11 +4,12 @@ import { askFaqAssistant } from '../services/api';
 import './FaqAssistant.css';
 
 const DEFAULT_PROMPTS = [
+  '👋 Hi! What can you do?',
   'Which products contain Vitamin C or Niacinamide?',
-  'What products are best for dry or sensitive skin?',
+  'What products are best for oily skin?',
+  'Show products under ₹500',
   'How do I perform a patch test?',
   'What is the shipping and return policy?',
-  'How does the Joyory SmartMatch quiz work?',
 ];
 
 function formatMessageText(text) {
@@ -21,11 +22,14 @@ function formatMessageText(text) {
       return <div key={lineIdx} className="faq-line-spacer" />;
     }
 
-    // Replace **bold** with <strong>
-    const parts = line.split(/(\*\*.*?\*\*)/g);
+    // Replace **bold** with <strong> and *italic* with <em>
+    const parts = line.split(/(\*\*.*?\*\*|\*.*?\*)/g);
     const formattedLine = parts.map((part, partIdx) => {
       if (part.startsWith('**') && part.endsWith('**')) {
         return <strong key={partIdx}>{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <em key={partIdx}>{part.slice(1, -1)}</em>;
       }
       return part;
     });
@@ -33,6 +37,14 @@ function formatMessageText(text) {
     if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
       return (
         <div key={lineIdx} className="faq-bullet-item">
+          {formattedLine}
+        </div>
+      );
+    }
+
+    if (line.trim().startsWith('|')) {
+      return (
+        <div key={lineIdx} className="faq-table-row-text">
           {formattedLine}
         </div>
       );
@@ -50,13 +62,18 @@ export default function FaqAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputQuery, setInputQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [conversationContextProductId, setConversationContextProductId] = useState(null);
+  const [suggestedQuestions, setSuggestedQuestions] = useState(DEFAULT_PROMPTS);
+
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'assistant',
-      text: "👋 Hi! I'm the **Joyory Catalog FAQ Assistant**.\n\nAsk me anything about **ingredients**, **usage directions**, **skin-type compatibility**, or **store policies** based strictly on our verified catalog.",
-      disclaimer: "⚠️ Demo Catalog Assistant: All answers are derived directly from product catalog specifications. Not medical advice.",
+      text: "👋 Hi! I'm the **Joyory Catalog & AI Assistant**.\n\nAsk me about **specific products**, **prices**, **active ingredients**, **routine steps**, **budget filters** (e.g. *'under ₹500'*), or compare two products from our live catalog.",
+      intentLabel: '👋 Welcome Assistant',
+      disclaimer: "⚠️ Demo Catalog Assistant: Grounded in SQLite catalog specifications. Not medical advice.",
       referencedProducts: [],
+      suggestedQuestions: DEFAULT_PROMPTS,
     },
   ]);
 
@@ -100,14 +117,26 @@ export default function FaqAssistant() {
     setLoading(true);
 
     try {
-      const response = await askFaqAssistant(query, activeProductId);
+      const response = await askFaqAssistant(query, activeProductId, conversationContextProductId);
+
+      // Update conversation context if returned by backend
+      if (response.context_product_id) {
+        setConversationContextProductId(response.context_product_id);
+      }
+
+      if (response.suggested_questions && response.suggested_questions.length > 0) {
+        setSuggestedQuestions(response.suggested_questions);
+      }
+
       const assistantMessage = {
         id: Date.now() + 1,
         sender: 'assistant',
         text: response.answer || "I couldn't find specific catalog data for that query.",
+        intentLabel: response.intent_label,
         disclaimer: response.disclaimer,
         referencedProducts: response.referenced_products || [],
         found: response.found,
+        suggestedQuestions: response.suggested_questions || [],
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
@@ -137,13 +166,16 @@ export default function FaqAssistant() {
   };
 
   const clearChat = () => {
+    setConversationContextProductId(null);
+    setSuggestedQuestions(DEFAULT_PROMPTS);
     setMessages([
       {
         id: Date.now(),
         sender: 'assistant',
-        text: "Chat cleared. What else can I help you find or understand in our catalog?",
+        text: "✨ Conversation cleared. What else can I help you find or understand in our catalog?",
         disclaimer: "⚠️ Demo Catalog Assistant: Not medical advice.",
         referencedProducts: [],
+        suggestedQuestions: DEFAULT_PROMPTS,
       },
     ]);
   };
@@ -159,7 +191,7 @@ export default function FaqAssistant() {
           id="open-faq-assistant-btn"
         >
           <span className="faq-launcher-icon">✨</span>
-          <span className="faq-launcher-text">Beauty FAQ</span>
+          <span className="faq-launcher-text">Beauty AI & FAQ</span>
           <span className="faq-launcher-pulse"></span>
         </button>
       )}
@@ -177,7 +209,7 @@ export default function FaqAssistant() {
                 <h6 className="faq-title">Joyory Catalog Assistant</h6>
                 <div className="faq-subtitle">
                   <span className="faq-status-dot"></span>
-                  <span>Automated catalog & ingredient helper</span>
+                  <span>Conversational & Live SQLite Grounded</span>
                 </div>
               </div>
             </div>
@@ -185,7 +217,7 @@ export default function FaqAssistant() {
               <button
                 className="faq-action-btn"
                 onClick={clearChat}
-                title="Clear Conversation"
+                title="Clear Conversation Context"
                 aria-label="Clear Conversation"
               >
                 🔄
@@ -226,7 +258,7 @@ export default function FaqAssistant() {
                 🔬 Show ingredients
               </button>
             )}
-            {DEFAULT_PROMPTS.map((prompt, idx) => (
+            {suggestedQuestions.map((prompt, idx) => (
               <button
                 key={idx}
                 className="faq-chip"
@@ -248,6 +280,11 @@ export default function FaqAssistant() {
                   <div className="faq-msg-avatar">🌿</div>
                 )}
                 <div className="faq-bubble">
+                  {/* Intent Badge */}
+                  {msg.intentLabel && msg.sender === 'assistant' && (
+                    <div className="faq-intent-tag">{msg.intentLabel}</div>
+                  )}
+
                   <div className="faq-bubble-content">
                     {formatMessageText(msg.text)}
                   </div>
@@ -269,7 +306,7 @@ export default function FaqAssistant() {
                               <span className="faq-ref-name">{p.name}</span>
                               <span className="faq-ref-brand">{p.brand} &middot; ₹{p.price}</span>
                             </div>
-                            <span className="faq-ref-arrow">→</span>
+                            <span className="faq-ref-arrow">View Product →</span>
                           </div>
                         ))}
                       </div>
@@ -306,7 +343,7 @@ export default function FaqAssistant() {
               ref={inputRef}
               type="text"
               className="faq-input-field"
-              placeholder="Ask about ingredients, usage, routine..."
+              placeholder="Ask about products, ingredients, prices, routine..."
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               onKeyDown={handleKeyDown}

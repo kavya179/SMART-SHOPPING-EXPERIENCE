@@ -64,10 +64,13 @@ export async function submitQuizRecommendations(quizData) {
 }
 
 // ── Product FAQ Assistant ─────────────────────────────────────
-export async function askFaqAssistant(question, productId = null) {
+export async function askFaqAssistant(question, productId = null, contextProductId = null) {
   const payload = { question };
   if (productId) {
     payload.product_id = productId;
+  }
+  if (contextProductId) {
+    payload.context_product_id = contextProductId;
   }
 
   const response = await fetch(`${API_BASE}/faq/`, {
