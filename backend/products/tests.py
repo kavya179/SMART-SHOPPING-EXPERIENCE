@@ -263,10 +263,11 @@ class FaqAssistantTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.data
         self.assertIn('Radiance Vitamin C Serum', data['answer'])
-        self.assertEqual(data['intent'], 'ingredient')
+        self.assertEqual(data['intent'], 'ingredients')
         self.assertGreater(len(data['referenced_products']), 0)
         self.assertEqual(data['referenced_products'][0]['name'], 'Radiance Vitamin C Serum')
         self.assertTrue(data['is_disclaimer_applicable'])
+        self.assertIn('intent_label', data)
 
     def test_faq_usage_query_for_product(self):
         response = self.client.post('/api/products/faq/', {
@@ -276,7 +277,7 @@ class FaqAssistantTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.data
         self.assertIn('Apply 3-4 drops', data['answer'])
-        self.assertEqual(data['intent'], 'usage')
+        self.assertEqual(data['intent'], 'usage_instructions')
         self.assertEqual(len(data['referenced_products']), 1)
 
     def test_faq_caution_query(self):
@@ -287,7 +288,7 @@ class FaqAssistantTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.data
         self.assertIn('patch test', data['answer'].lower())
-        self.assertEqual(data['intent'], 'caution')
+        self.assertEqual(data['intent'], 'safety_and_cautions')
 
     def test_faq_general_shipping_policy(self):
         response = self.client.post('/api/faq/', {
@@ -296,17 +297,28 @@ class FaqAssistantTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.data
         self.assertIn('shipping is FREE', data['answer'])
-        self.assertEqual(data['intent'], 'platform_faq')
+        self.assertEqual(data['intent'], 'platform_policy')
 
-    def test_faq_unavailable_fallback_and_no_medical_guarantee(self):
+    def test_faq_medical_query_guardrail(self):
         response = self.client.post('/api/products/faq/', {
             'question': 'Can this diagnose or cure chronic eczema on my eyelids?'
         }, format='json')
         self.assertEqual(response.status_code, 200)
         data = response.data
-        self.assertIn('not currently available in the Joyory product catalog', data['answer'])
+        self.assertEqual(data['intent'], 'medical_disclaimer_fallback')
+        self.assertIn('Medical Advisory', data['answer'])
         self.assertTrue(data['is_disclaimer_applicable'])
         self.assertIn('not a medical professional', data['disclaimer'].lower())
+
+    def test_faq_unsupported_query_fallback(self):
+        response = self.client.post('/api/products/faq/', {
+            'question': 'How do I change the oil in my car engine?'
+        }, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertEqual(data['intent'], 'unavailable')
+        self.assertIn('not currently available in the Joyory product catalog', data['answer'])
+        self.assertFalse(data['found'])
 
     def test_faq_empty_question(self):
         response = self.client.post('/api/products/faq/', {
@@ -319,4 +331,5 @@ class FaqAssistantTests(TestCase):
         response = self.client.post('/api/products/faq/', 'not-a-dict', format='json')
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', response.data)
+
 

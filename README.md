@@ -1,112 +1,142 @@
 # Joyory SmartMatch — Smart Shopping Experience
 
-> **Hackathon demo prototype** with sample data.  
+> **Hackathon demo prototype** with verified sample data.  
 > Not officially integrated with Joyory.
 
-A full-stack web application that helps customers discover, understand, compare, and choose beauty & personal-care products based on their needs, preferences, and budget.
+A full-stack, intelligent beauty and personal-care shopping platform that helps customers discover, understand, compare, and choose products based on their skin profile, preferences, and budget.
 
-## Tech Stack
+---
 
-| Layer      | Technology                          |
-|------------|-------------------------------------|
-| Frontend   | React 18 + JavaScript + Bootstrap 5 |
-| Backend    | Python + Django 4.2                 |
-| API        | Django REST Framework               |
-| Database   | SQLite (via Django ORM)             |
-| Matching   | Python rule-based logic (Phase 3+)  |
+## 🌟 Tech Stack
 
-## Project Structure
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 18 + JavaScript (ES6+) + Bootstrap 5 + Glassmorphism CSS3 |
+| **Typography** | Google Fonts (*Outfit* & *Plus Jakarta Sans*) |
+| **Backend** | Python 3.12 + Django 5.x |
+| **API** | Django REST Framework (DRF) |
+| **Database** | SQLite (via Django ORM) |
+| **ML & NLP** | scikit-learn (TF-IDF + Logistic Regression) + Cosine Similarity |
+| **Testing** | Django Test Runner (`products/tests.py` — 26 unit tests) |
+
+---
+
+## 📂 Project Structure
 
 ```
 SMART-SHOPPING-EXPERIENCE/
-├── backend/                    # Django project
+├── backend/
 │   ├── manage.py
 │   ├── requirements.txt
 │   ├── smartmatch/             # Django settings, URLs, WSGI
-│   ├── api/                    # Health-check API app
-│   └── products/               # Product catalog app (Phase 2)
-│       ├── models.py           # Product model
+│   ├── api/                    # Health-check app
+│   └── products/               # Product catalog, recommendation & FAQ app
+│       ├── models.py           # Product model with INCI, routine & caution fields
 │       ├── serializers.py      # DRF serializers
-│       ├── views.py            # List, detail, search, filter
-│       ├── admin.py            # Django admin config
-│       ├── tests.py            # Unit tests
+│       ├── views.py            # Catalog, recommendation & FAQ endpoints
+│       ├── tests.py            # 26 automated unit tests
+│       ├── data/
+│       │   └── faq_intent_dataset.json  # Labeled intent training dataset
+│       ├── scripts/
+│       │   └── train_faq_model.py       # Reproducible ML training script
+│       ├── ml_models/
+│       │   ├── faq_intent_classifier.joblib  # Trained TF-IDF + Logistic Regression model
+│       │   └── faq_semantic_index.joblib     # TF-IDF QA semantic retrieval index
+│       ├── services/
+│       │   ├── recommender.py   # Rule-based recommendation engine
+│       │   └── faq_assistant.py # Hybrid NLP & entity extraction assistant
 │       └── management/commands/
-│           └── seed_products.py  # Sample data seeder
-├── frontend/                   # React app
-│   ├── public/index.html       # Bootstrap 5 via CDN
+│           └── seed_products.py # 12-product multi-category seeder
+├── frontend/                   # React SPA
+│   ├── public/index.html
 │   └── src/
-│       ├── App.js              # Landing page
-│       └── components/
-│           └── ConnectionTest.js
-├── README.md
-└── .gitignore
+│       ├── components/
+│       │   ├── Navbar.js / .css
+│       │   ├── Footer.js / .css
+│       │   ├── ProductCard.js / .css
+│       │   ├── CompareDock.js / .css
+│       │   ├── FaqAssistant.js / .css   # Intelligent floating chat assistant
+│       │   └── StateDisplay.js / .css
+│       ├── context/
+│       │   └── ShopContext.js  # Global cart, wishlist, compare & toast state
+│       ├── pages/
+│       │   ├── HomePage.js / .css
+│       │   ├── ProductCatalog.js / .css
+│       │   ├── ProductDetail.js / .css
+│       │   ├── SmartMatchQuiz.js / .css
+│       │   ├── ComparePage.js / .css
+│       │   ├── WishlistPage.js / .css
+│       │   └── CartPage.js / .css
+│       └── services/
+│           └── api.js          # Unified API service layer
+├── docs/                       # Comprehensive documentation & PDFs
+│   ├── Joyory_SmartMatch_Development_Documentation.pdf
+│   ├── Joyory_SmartMatch_Development_Documentation.md
+│   └── HACKATHON_DELIVERABLES.pdf
+├── HACKATHON_DELIVERABLES.md
+├── HACKATHON_DELIVERABLES.pdf
+└── README.md
 ```
 
-## Quick Start (Windows PowerShell)
+---
 
-### Terminal 1 — Backend (Django on port 8000)
+## 🚀 Quick Start (Windows PowerShell)
 
+### 1. Terminal 1 — Backend (Django on port 8000)
 ```powershell
 cd SMART-SHOPPING-EXPERIENCE\backend
-python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py seed_products       # Load 12 sample products
+python manage.py seed_products
+
+# Optional: Retrain / evaluate the FAQ intent classifier
+python products\scripts\train_faq_model.py
+
+# Run unit tests
+python manage.py test
+
+# Start backend server
 python manage.py runserver
 ```
 
-### Terminal 2 — Frontend (React on port 3000)
-
+### 2. Terminal 2 — Frontend (React on port 3000)
 ```powershell
 cd SMART-SHOPPING-EXPERIENCE\frontend
 npm install
 npm start
 ```
+Visit **`http://localhost:3000`** in your browser.
 
-## API Endpoints
+---
 
-| Method | URL                              | Description                    |
-|--------|----------------------------------|--------------------------------|
-| GET    | `/api/health/`                   | Health check                   |
-| GET    | `/api/products/`                 | List all products (filterable) |
-| GET    | `/api/products/<id>/`            | Product detail                 |
-| GET    | `/api/products/categories/`      | List categories with counts    |
+## 🤖 Beauty FAQ Assistant Architecture (Hybrid NLP)
 
-### Filtering & Search
+The Beauty FAQ Assistant solves the problem of repetitive, generic answers by combining:
+1. **Machine Learning Intent Classifier**: Lightweight `TfidfVectorizer(ngram_range=(1, 2))` + `LogisticRegression` pipeline classifying 10 distinct customer intents (`usage_instructions`, `ingredients`, `product_purpose`, `safety_and_cautions`, `price_and_discount`, `availability_and_stock`, `comparison_and_alternatives`, `skin_type_recommendation`, `platform_policy`, `medical_disclaimer_fallback`).
+2. **Semantic Question-Answer Retrieval**: TF-IDF cosine similarity index over verified platform questions with a strict similarity threshold to prevent false positives.
+3. **Product Entity Extraction**: Automatically extracts active product context from Product Detail Pages or entity mentions in the query.
+4. **Dynamic Context-Aware Response Generation**: Formats custom, non-repetitive answers addressing the exact intent, referencing verified database attributes, and displaying intent category badges (`🏷️ Usage Directions`, `🏷️ Ingredients & Actives`, `🏷️ Safety & Patch Test`).
+5. **Strict Non-Medical Guardrails**: Programmatically intercepts medical treatment queries and attaches clear non-medical disclaimers.
 
-| Parameter    | Example                             | Description              |
-|-------------|--------------------------------------|--------------------------|
-| `category`   | `?category=skincare`                | Filter by category       |
-| `skin_type`  | `?skin_type=oily`                   | Filter by skin type      |
-| `min_price`  | `?min_price=300`                    | Minimum price            |
-| `max_price`  | `?max_price=800`                    | Maximum price            |
-| `search`     | `?search=vitamin`                   | Search name/brand/desc   |
-| `concern`    | `?concern=acne`                     | Filter by concern tag    |
-| `bestseller` | `?bestseller=true`                  | Only bestsellers         |
-| `new`        | `?new=true`                         | Only new arrivals        |
-| `ordering`   | `?ordering=-rating`                 | Sort (price, rating, name) |
+---
 
-## Verification
+## 🔗 REST API Endpoints
 
-1. **Backend health check**: http://localhost:8000/api/health/
-2. **Product list**: http://localhost:8000/api/products/
-3. **Frontend**: http://localhost:3000 → click "Test Health" and "Fetch Products"
-4. **Django admin**: http://localhost:8000/admin/ (create superuser first: `python manage.py createsuperuser`)
-5. **Run tests**: `python manage.py test products api --verbosity=2`
+| Method | URL | Description |
+|---|---|---|
+| `GET` | `/api/health/` | Health check |
+| `GET` | `/api/products/` | Filterable product catalog (`category`, `search`, `min_price`, `max_price`, `skin_type`, `ordering`) |
+| `GET` | `/api/products/<id>/` | Product detail with full INCI, routine, and cautions |
+| `GET` | `/api/products/categories/` | Category counts summary |
+| `POST` | `/api/recommendations/` | SmartMatch 5-step quiz recommendation engine |
+| `POST` | `/api/faq/` | Intelligent Hybrid NLP Product FAQ Assistant |
 
-## Seeding & Resetting Data
+---
 
+## 🧪 Automated Testing
 ```powershell
-# Seed sample products (idempotent — won't duplicate)
-python manage.py seed_products
-
-# Clear and reseed
-python manage.py seed_products --clear
+cd SMART-SHOPPING-EXPERIENCE\backend
+.\venv\Scripts\python.exe manage.py test
 ```
-
-## Completed Phases
-
-- [x] **Phase 1**: Project scaffolding, Django + React setup, API health check, CORS
-- [x] **Phase 2**: Product model, migrations, sample catalog, CRUD API, search/filter, admin, tests
-- [ ] **Phase 3**: Recommendation engine, user preferences (upcoming)
+**Result**: 26 / 26 Unit Tests Passing (100% OK, 0 errors, 0 failures).

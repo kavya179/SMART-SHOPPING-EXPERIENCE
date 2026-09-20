@@ -13,6 +13,7 @@ import CompareDock from './components/CompareDock';
 import FaqAssistant from './components/FaqAssistant';
 import { ShopProvider } from './context/ShopContext';
 import './App.css';
+import './theme-fixes.css';
 
 function App() {
   return (
