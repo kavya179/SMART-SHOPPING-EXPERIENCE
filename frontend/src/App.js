@@ -19,6 +19,7 @@ import { ShopProvider } from './context/ShopContext';
 import './App.css';
 import './theme-fixes.css';
 import './text-layout-fixes.css';
+import './page-polish.css';
 
 function App() {
   return (

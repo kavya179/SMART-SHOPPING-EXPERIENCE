@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import { fetchProducts } from '../services/api';
 import './Navbar.css';
 
 function Navbar() {
@@ -11,6 +12,8 @@ function Navbar() {
 
   const urlSearch = location.pathname === '/products' ? (searchParams.get('search') || '') : '';
   const [search, setSearch] = useState(urlSearch);
+  const [suggestions, setSuggestions] = useState([]);
+  const [searchFocused, setSearchFocused] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Sync navbar search text if URL search param changes
@@ -19,6 +22,27 @@ function Navbar() {
       setSearch(searchParams.get('search') || '');
     }
   }, [location.pathname, searchParams]);
+
+  useEffect(() => {
+    const query = search.trim();
+    if (query.length < 2) {
+      setSuggestions([]);
+      return undefined;
+    }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const data = await fetchProducts({ search: query });
+        if (!cancelled) setSuggestions((data.results || []).slice(0, 5));
+      } catch (error) {
+        if (!cancelled) setSuggestions([]);
+      }
+    }, 260);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [search]);
 
   const submitSearch = (event) => {
     event.preventDefault();
@@ -30,6 +54,8 @@ function Navbar() {
       navigate(`/products${query ? `?search=${encodeURIComponent(query)}` : ''}`);
     }
     setMenuOpen(false);
+    setSearchFocused(false);
+    setSuggestions([]);
   };
 
   const clearSearch = () => {
@@ -37,6 +63,13 @@ function Navbar() {
     if (location.pathname === '/products') {
       navigate('/products');
     }
+    setSuggestions([]);
+  };
+
+  const openSuggestion = (product) => {
+    navigate(`/products/${product.id}`);
+    setSearchFocused(false);
+    setSuggestions([]);
   };
 
   const active = (path) => path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
@@ -53,7 +86,7 @@ function Navbar() {
         </Link>
 
         {/* Global Navbar Search Bar */}
-        <form className="nav-search" onSubmit={submitSearch}>
+        <form className={`nav-search ${searchFocused ? 'is-focused' : ''}`} onSubmit={submitSearch}>
           <button type="submit" className="nav-search-btn" aria-label="Search">
             <i className="bi bi-search" />
           </button>
@@ -62,6 +95,8 @@ function Navbar() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setTimeout(() => setSearchFocused(false), 180)}
             placeholder="Search products, ingredients, body care..."
             aria-label="Search products"
           />
@@ -74,6 +109,18 @@ function Navbar() {
             >
               <i className="bi bi-x" />
             </button>
+          )}
+          {searchFocused && search.trim().length >= 2 && (
+            <div className="nav-search-results">
+              {suggestions.length > 0 ? suggestions.map((product) => (
+                <button type="button" className="nav-search-result" key={product.id} onMouseDown={() => openSuggestion(product)}>
+                  <img src={product.image_url} alt="" />
+                  <span><strong>{product.name}</strong><small>{product.brand} · ₹{product.discounted_price || product.price}</small></span>
+                  <i className="bi bi-arrow-up-right" />
+                </button>
+              )) : <div className="nav-search-empty"><i className="bi bi-search me-2" />No matching products yet</div>}
+              <button type="submit" className="nav-search-see-all">See all results for “{search.trim()}” <i className="bi bi-arrow-right" /></button>
+            </div>
           )}
         </form>
 

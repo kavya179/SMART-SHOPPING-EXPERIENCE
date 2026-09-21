@@ -19,8 +19,8 @@ function Footer() {
       <div className="container">
         {/* Top Newsletter & Brand Bar */}
         <div className="footer-top-card glass-card p-4 p-md-5 mb-5">
-          <div className="row align-items-center gy-4">
-            <div className="col-lg-6">
+          <div className="row align-items-center gy-4 footer-newsletter-grid">
+            <div className="col-lg-6 footer-newsletter-copy">
               <span className="badge-pill-glow badge-violet mb-2">
                 <i className="bi bi-envelope-heart me-1"></i> The Beauty Insider
               </span>
@@ -29,7 +29,7 @@ function Footer() {
                 Receive weekly ingredient breakdowns, newly matched products, and exclusive hackathon updates.
               </p>
             </div>
-            <div className="col-lg-6">
+            <div className="col-lg-6 footer-newsletter-form-col">
               {subscribed ? (
                 <div className="subscribed-success-box p-3 text-center">
                   <i className="bi bi-check2-circle text-success fs-4 me-2"></i>
@@ -55,8 +55,8 @@ function Footer() {
         </div>
 
         {/* Navigation Grid */}
-        <div className="row gy-4 mb-5">
-          <div className="col-lg-4 col-md-6">
+        <div className="row gy-4 mb-5 footer-content-grid">
+          <div className="col-lg-4 col-md-6 footer-column footer-brand-column">
             <div className="footer-brand-wrap mb-3">
               <div className="brand-logo-glow me-2">
                 <i className="bi bi-stars"></i>
@@ -75,7 +75,7 @@ function Footer() {
             </div>
           </div>
 
-          <div className="col-lg-2 col-md-3 col-6">
+          <div className="col-lg-2 col-md-3 col-6 footer-column">
             <h6 className="footer-col-title">Shop Categories</h6>
             <ul className="footer-link-list">
               <li><Link to="/products?category=skincare">Skincare</Link></li>
@@ -87,7 +87,7 @@ function Footer() {
             </ul>
           </div>
 
-          <div className="col-lg-3 col-md-3 col-6">
+          <div className="col-lg-3 col-md-3 col-6 footer-column">
             <h6 className="footer-col-title">Discover By Concern</h6>
             <ul className="footer-link-list">
               <li><Link to="/products?concern=brightening">Brightening & Radiance</Link></li>
@@ -99,7 +99,7 @@ function Footer() {
             </ul>
           </div>
 
-          <div className="col-lg-3 col-md-6">
+          <div className="col-lg-3 col-md-6 footer-column">
             <h6 className="footer-col-title">About This Prototype</h6>
             <div className="prototype-info-card p-3">
               <p className="proto-text mb-2">
