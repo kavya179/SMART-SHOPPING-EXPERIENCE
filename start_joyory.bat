@@ -107,16 +107,21 @@ echo   All checks passed. Launching servers...
 echo  ========================================================
 echo.
 
-REM ── Launch Django backend
+REM ── Launch Django backend (using exact venv python executable)
 echo  [Starting] Django backend on http://localhost:8000 ...
-start "Joyory — Django Backend (port 8000)" cmd /k "title Joyory Backend ^& cd /d %BACKEND% ^& call %ACTIVATE% ^& echo. ^& echo  Backend ready: http://localhost:8000/api/ ^& echo  Press Ctrl+C to stop. ^& echo. ^& python manage.py runserver 8000"
+start "Joyory - Django Backend (port 8000)" cmd /k "title Joyory Backend && cd /d "%BACKEND%" && echo. && echo  ========================================== && echo  Joyory Django Backend running on port 8000 && echo  API endpoint: http://localhost:8000/api/ && echo  ========================================== && echo. && "%PYTHON%" manage.py runserver 8000"
 
 REM ── Small pause to let backend initialise before frontend
 timeout /t 3 /nobreak >nul
 
 REM ── Launch React frontend
 echo  [Starting] React frontend on http://localhost:3000 ...
-start "Joyory — React Frontend (port 3000)" cmd /k "title Joyory Frontend ^& cd /d %FRONTEND% ^& echo. ^& echo  Frontend starting: http://localhost:3000 ^& echo  Press Ctrl+C to stop. ^& echo. ^& npm start"
+start "Joyory - React Frontend (port 3000)" cmd /k "title Joyory Frontend && cd /d "%FRONTEND%" && echo. && echo  ========================================== && echo  Joyory React Frontend starting on port 3000 && echo  Local URL:    http://localhost:3000 && echo  ========================================== && echo. && npm start"
+
+REM ── Wait for servers to initialize and auto-open browser
+timeout /t 5 /nobreak >nul
+echo  [Launching] Opening browser at http://localhost:3000 ...
+start http://localhost:3000/
 
 echo.
 echo  ========================================================
@@ -127,12 +132,13 @@ echo   Frontend App:  http://localhost:3000/
 echo   Dashboard:     http://localhost:3000/dashboard
 echo   Admin panel:   http://localhost:8000/admin/
 echo.
-echo   Two separate windows have opened.
-echo   Close them (or press Ctrl+C inside) to stop the servers.
+echo   Two server windows have opened in the background.
+echo   Your browser has opened to http://localhost:3000/
+echo   Close the server windows (or press Ctrl+C inside) to stop.
 echo  ========================================================
 echo.
 echo   URLs to bookmark:
-echo     /          - Homepage
+echo     /          - Homepage & Catalog
 echo     /quiz      - SmartMatch Quiz
 echo     /dashboard - Unified Dashboard
 echo     /routine   - Routine Builder
@@ -140,5 +146,6 @@ echo     /ingredient-check - Ingredient Safety Checker
 echo     /reviews   - Review Insights
 echo     /compare   - Product Comparison
 echo.
-pause
+echo  Servers are active. Press any key to exit this launcher window.
+pause >nul
 endlocal

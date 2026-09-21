@@ -190,7 +190,7 @@ function ProductCatalog() {
         </div>
 
         {/* ── Active Filter Bar & Quick Category Chips ────────── */}
-        <div className="category-pills-bar mb-4">
+        <div className="category-pills-bar mb-3">
           <button
             className={`cat-pill-btn ${category === '' ? 'active' : ''}`}
             onClick={() => setCategory('')}
@@ -208,194 +208,155 @@ function ProductCatalog() {
           ))}
         </div>
 
-        <div className="row g-4">
-          {/* ── Sidebar Filters ─────────────────────────────── */}
-          <div className="col-lg-3">
-            <aside className="filter-sidebar glass-card p-4">
-              <div className="filter-top-bar">
-                <h5 className="filter-panel-heading mb-0">
-                  <i className="bi bi-sliders me-2 text-primary-light"></i> Refine
-                </h5>
-                {hasActiveFilters && (
-                  <button className="filter-reset-btn" onClick={clearFilters}>
-                    <i className="bi bi-arrow-counterclockwise me-1"></i> Reset
+        {/* ── Horizontal Filter Bar ────────────────────────────── */}
+        <div className="horizontal-filter-bar glass-card p-3 mb-4">
+          <div className="h-filter-row">
+            {/* Search */}
+            <div className="h-filter-item h-filter-search">
+              <div className="catalog-search-input-wrap">
+                <i className="bi bi-search search-icon"></i>
+                <input
+                  id="cat-search"
+                  type="text"
+                  className="filter-text-input"
+                  placeholder="Search products, actives..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                {search && (
+                  <button className="search-input-clear" onClick={() => setSearch('')}>
+                    <i className="bi bi-x"></i>
                   </button>
                 )}
               </div>
-
-              {/* Search Bar */}
-              <div className="filter-block">
-                <label className="filter-section-title" htmlFor="cat-search">Search Catalog</label>
-                <div className="catalog-search-input-wrap">
-                  <i className="bi bi-search search-icon"></i>
-                  <input
-                    id="cat-search"
-                    type="text"
-                    className="filter-text-input"
-                    placeholder="Search name, ingredients..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  {search && (
-                    <button className="search-input-clear" onClick={() => setSearch('')}>
-                      <i className="bi bi-x"></i>
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Skin Type Filter */}
-              <div className="filter-block">
-                <label className="filter-section-title">Skin Type</label>
-                <div className="skin-pill-group">
-                  {SKIN_TYPES.map((st) => (
-                    <button
-                      key={st.value}
-                      type="button"
-                      className={`skin-pill-btn ${skinType === st.value ? 'active' : ''}`}
-                      onClick={() => setSkinType(skinType === st.value ? '' : st.value)}
-                    >
-                      {st.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Target Concern */}
-              <div className="filter-block">
-                <label className="filter-section-title">Target Concern</label>
-                <select
-                  className="filter-dropdown-select"
-                  value={concern}
-                  onChange={(e) => setConcern(e.target.value)}
-                >
-                  {CONCERN_PRESETS.map((cp) => (
-                    <option key={cp.value} value={cp.value}>{cp.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Price Range Presets */}
-              <div className="filter-block">
-                <label className="filter-section-title">Price Range</label>
-                <div className="price-presets-group">
-                  {PRICE_PRESETS.map((p, idx) => {
-                    const isSelected = minPrice === p.min && maxPrice === p.max;
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        className={`price-preset-pill ${isSelected ? 'active' : ''}`}
-                        onClick={() => handlePricePreset(p)}
-                      >
-                        {p.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="d-flex align-items-center gap-2 mt-2">
-                  <input
-                    type="number"
-                    className="filter-text-input text-center"
-                    placeholder="Min ₹"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                  />
-                  <span className="text-dim">–</span>
-                  <input
-                    type="number"
-                    className="filter-text-input text-center"
-                    placeholder="Max ₹"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Quick Tags (Bestsellers / New) */}
-              <div className="filter-block">
-                <label className="filter-section-title">Highlights</label>
-                <div className="d-flex flex-column gap-2">
-                  <label className="checkbox-custom-label">
-                    <input
-                      type="checkbox"
-                      checked={showBestsellers}
-                      onChange={(e) => setShowBestsellers(e.target.checked)}
-                    />
-                    <span className="checkbox-text">
-                      <i className="bi bi-fire text-danger me-1"></i> Bestsellers Only
-                    </span>
-                  </label>
-                  <label className="checkbox-custom-label">
-                    <input
-                      type="checkbox"
-                      checked={showNew}
-                      onChange={(e) => setShowNew(e.target.checked)}
-                    />
-                    <span className="checkbox-text">
-                      <i className="bi bi-sparkle text-primary-light me-1"></i> New Drops Only
-                    </span>
-                  </label>
-                </div>
-              </div>
-            </aside>
-          </div>
-
-          {/* ── Main Product Results Grid ────────────────────── */}
-          <div className="col-lg-9">
-            {/* Top Toolbar */}
-            <div className="catalog-toolbar glass-card p-3 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
-              <div className="results-summary">
-                <span className="results-badge-count">{totalCount}</span>
-                <span className="results-text">
-                  product{totalCount !== 1 ? 's' : ''} found
-                  {category && ` in ${category}`}
-                </span>
-              </div>
-
-              {/* Sort Selector */}
-              <div className="d-flex align-items-center gap-2">
-                <span className="sort-label">Sort:</span>
-                <select
-                  className="filter-sort-select"
-                  value={ordering}
-                  onChange={(e) => setOrdering(e.target.value)}
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
             </div>
 
-            {/* Grid or Empty/Loading State */}
-            {loading ? (
-              <LoadingState message="Matching formulas..." />
-            ) : error ? (
-              <ErrorState message={error} onRetry={loadProducts} />
-            ) : products.length === 0 ? (
-              <div className="empty-catalog-box glass-card p-5 text-center">
-                <div className="empty-icon-circle mb-3">
-                  <i className="bi bi-search"></i>
-                </div>
-                <h4 className="fw-bold mb-2">No matching products found</h4>
-                <p className="text-muted mb-4 max-w-400 mx-auto">
-                  Try adjusting or clearing your filters to discover more beauty products.
-                </p>
-                <button className="btn-glow" onClick={clearFilters}>
-                  <i className="bi bi-arrow-counterclockwise me-1"></i> Reset All Filters
-                </button>
-              </div>
-            ) : (
-              <div className="row g-3 g-md-4">
-                {products.map((product) => (
-                  <div className="col-6 col-md-4" key={product.id}>
-                    <ProductCard product={product} />
-                  </div>
+            {/* Skin Type */}
+            <div className="h-filter-item">
+              <select
+                className="filter-dropdown-select"
+                value={skinType}
+                onChange={(e) => setSkinType(e.target.value)}
+                aria-label="Filter by Skin Type"
+              >
+                {SKIN_TYPES.map((st) => (
+                  <option key={st.value} value={st.value}>
+                    {st.value === '' ? '🧴 All Skin Types' : `Skin: ${st.label}`}
+                  </option>
                 ))}
-              </div>
+              </select>
+            </div>
+
+            {/* Concern */}
+            <div className="h-filter-item">
+              <select
+                className="filter-dropdown-select"
+                value={concern}
+                onChange={(e) => setConcern(e.target.value)}
+                aria-label="Filter by Concern"
+              >
+                {CONCERN_PRESETS.map((cp) => (
+                  <option key={cp.value} value={cp.value}>{cp.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Price Presets */}
+            <div className="h-filter-item h-price-presets">
+              {PRICE_PRESETS.map((p, idx) => {
+                const isSelected = minPrice === p.min && maxPrice === p.max;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`price-preset-pill ${isSelected ? 'active' : ''}`}
+                    onClick={() => handlePricePreset(p)}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Highlights */}
+            <div className="h-filter-item h-filter-toggles">
+              <button
+                type="button"
+                className={`h-toggle-chip ${showBestsellers ? 'active' : ''}`}
+                onClick={() => setShowBestsellers(!showBestsellers)}
+              >
+                <i className="bi bi-fire text-danger me-1"></i> Bestsellers
+              </button>
+              <button
+                type="button"
+                className={`h-toggle-chip ${showNew ? 'active' : ''}`}
+                onClick={() => setShowNew(!showNew)}
+              >
+                <i className="bi bi-sparkle text-rose me-1"></i> New
+              </button>
+            </div>
+
+            {/* Sort & Reset on right */}
+            <div className="h-filter-item h-filter-sort ms-auto">
+              <span className="sort-label">Sort:</span>
+              <select
+                className="filter-sort-select"
+                value={ordering}
+                onChange={(e) => setOrdering(e.target.value)}
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {hasActiveFilters && (
+              <button className="h-filter-reset-btn" onClick={clearFilters} title="Reset all filters">
+                <i className="bi bi-arrow-counterclockwise me-1"></i> Reset
+              </button>
             )}
           </div>
+        </div>
+
+        {/* ── Product Results Toolbar & Count ─────────────────── */}
+        <div className="d-flex align-items-center justify-content-between mb-3 px-1">
+          <div className="results-summary">
+            <span className="results-badge-count">{totalCount}</span>
+            <span className="results-text">
+              product{totalCount !== 1 ? 's' : ''} available
+              {category && ` in ${category}`}
+            </span>
+          </div>
+        </div>
+
+        {/* ── Main Product Results Grid (Full Width) ────────── */}
+        <div className="catalog-full-grid-wrapper">
+          {loading ? (
+            <LoadingState message="Matching formulas..." />
+          ) : error ? (
+            <ErrorState message={error} onRetry={loadProducts} />
+          ) : products.length === 0 ? (
+            <div className="empty-catalog-box glass-card p-5 text-center">
+              <div className="empty-icon-circle mb-3">
+                <i className="bi bi-search"></i>
+              </div>
+              <h4 className="fw-bold mb-2">No matching products found</h4>
+              <p className="text-muted mb-4 max-w-400 mx-auto">
+                Try adjusting or clearing your filters to discover more beauty products.
+              </p>
+              <button className="btn-glow" onClick={clearFilters}>
+                <i className="bi bi-arrow-counterclockwise me-1"></i> Reset All Filters
+              </button>
+            </div>
+          ) : (
+            <div className="row g-3 g-md-4">
+              {products.map((product) => (
+                <div className="col-6 col-md-4 col-lg-3" key={product.id}>
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { submitQuizRecommendations } from '../services/api';
-import { LoadingState } from '../components/StateDisplay';
 import './SmartMatchQuiz.css';
 
 // ── Step 1: Categories ──────────────────────────────────────────
@@ -366,9 +365,9 @@ function SmartMatchQuiz() {
 
           {/* Progress Indicator */}
           <div className="quiz-progress-container mt-4 mx-auto">
-            <div className="d-flex justify-content-between text-muted fs-8 mb-2">
-              <span>Step {currentStep} of {totalSteps}</span>
-              <span>{Math.round((currentStep / totalSteps) * 100)}% Completed</span>
+            <div className="quiz-progress-labels d-flex justify-content-between align-items-center mb-2">
+              <span className="quiz-progress-step-text">Step {currentStep} of {totalSteps}</span>
+              <span className="quiz-progress-pct-text">{Math.round((currentStep / totalSteps) * 100)}% Completed</span>
             </div>
             <div className="progress-track">
               <div
@@ -379,28 +378,36 @@ function SmartMatchQuiz() {
           </div>
         </div>
 
-        {/* Quiz Step Card */}
-        <div className="quiz-step-card glass-card p-4 p-md-5 mb-4 mx-auto">
-          {error && (
-            <div className="alert alert-danger mb-4" role="alert">
-              <i className="bi bi-exclamation-triangle-fill me-2"></i>
-              {error}
-            </div>
-          )}
-
+        {/* Multi-Step Question Card */}
+        <div className="quiz-step-card glass-card p-4 p-md-5 mx-auto">
           {loading ? (
-            <LoadingState message="Matching formulas against SQLite catalog..." />
+            <div className="quiz-loading-state text-center py-5">
+              <div className="spinner-border text-primary-light mb-3" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <h4 className="fw-bold mb-2">Analyzing Product Formulations...</h4>
+              <p className="text-muted">Our rule-based engine is evaluating your skin profile and matching active ingredients.</p>
+            </div>
+          ) : error ? (
+            <div className="quiz-error-state text-center py-5">
+              <i className="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
+              <h4 className="fw-bold mb-2">Matching Error</h4>
+              <p className="text-muted mb-4">{error}</p>
+              <button className="btn-glow" onClick={handleSubmitQuiz}>
+                <i className="bi bi-arrow-clockwise me-1"></i> Try Again
+              </button>
+            </div>
           ) : (
             <>
               {/* ── STEP 1: Category Selection ────────────────────── */}
               {currentStep === 1 && (
                 <div className="step-content animate-in">
                   <h3 className="step-question-title">What personal-care category are you shopping for?</h3>
-                  <p className="step-question-desc">Select the area of your self-care routine you wish to upgrade.</p>
+                  <p className="step-question-desc">Select the main category you want to build your routine or find a match for.</p>
 
                   <div className="row g-3">
                     {CATEGORIES.map((cat) => (
-                      <div className="col-md-4 col-6" key={cat.id}>
+                      <div className="col-md-6 col-lg-4" key={cat.id}>
                         <div
                           className={`quiz-option-card ${category === cat.id ? 'active' : ''}`}
                           onClick={() => handleCategorySelect(cat.id)}
@@ -417,28 +424,24 @@ function SmartMatchQuiz() {
                 </div>
               )}
 
-              {/* ── STEP 2: Profile / Type ────────────────────────── */}
+              {/* ── STEP 2: Skin Profile / Intended Use ───────────── */}
               {currentStep === 2 && (
                 <div className="step-content animate-in">
                   <h3 className="step-question-title">{profileConfig.title}</h3>
                   <p className="step-question-desc">{profileConfig.subtitle}</p>
 
                   <div className="row g-3">
-                    {profileConfig.options.map((opt) => (
-                      <div className="col-md-6" key={opt.id}>
+                    {profileConfig.options.map((item) => (
+                      <div className="col-md-6 col-lg-4" key={item.id}>
                         <div
-                          className={`quiz-option-card ${skinType === opt.id ? 'active' : ''}`}
-                          onClick={() => setSkinType(opt.id)}
+                          className={`quiz-option-card ${skinType === item.id ? 'active' : ''}`}
+                          onClick={() => setSkinType(item.id)}
                         >
-                          <div className="d-flex align-items-center gap-3">
-                            <div className="option-icon-box mb-0">
-                              <i className={`bi ${opt.icon || 'bi-check2'}`}></i>
-                            </div>
-                            <div>
-                              <h5 className="option-name mb-1">{opt.label}</h5>
-                              <span className="option-desc">{opt.desc}</span>
-                            </div>
+                          <div className="option-icon-box">
+                            <i className={`bi ${item.icon}`}></i>
                           </div>
+                          <h5 className="option-name">{item.label}</h5>
+                          <span className="option-desc">{item.desc}</span>
                         </div>
                       </div>
                     ))}
@@ -446,11 +449,11 @@ function SmartMatchQuiz() {
                 </div>
               )}
 
-              {/* ── STEP 3: Primary Goal & Concern ───────────────── */}
+              {/* ── STEP 3: Primary Concern ──────────────────────── */}
               {currentStep === 3 && (
                 <div className="step-content animate-in">
                   <h3 className="step-question-title">What is your primary goal or concern?</h3>
-                  <p className="step-question-desc">Our rule-based engine will prioritize active ingredients addressing this goal.</p>
+                  <p className="step-question-desc">We will match active ingredients specifically proven to target this concern.</p>
 
                   <div className="row g-3">
                     {concernsList.map((c) => (
@@ -471,12 +474,12 @@ function SmartMatchQuiz() {
               {/* ── STEP 4: Budget Range ─────────────────────────── */}
               {currentStep === 4 && (
                 <div className="step-content animate-in">
-                  <h3 className="step-question-title">What is your target budget?</h3>
-                  <p className="step-question-desc">We will highlight products matching your price point without unexpected markups.</p>
+                  <h3 className="step-question-title">What is your target budget for this product?</h3>
+                  <p className="step-question-desc">We will filter out products beyond your budget or rank best-value options first.</p>
 
                   <div className="row g-3 mb-4">
                     {BUDGET_OPTIONS.map((b) => (
-                      <div className="col-md-6 col-6" key={b.id}>
+                      <div className="col-md-6" key={b.id || 'any'}>
                         <div
                           className={`quiz-option-card ${budgetMax === b.id ? 'active' : ''}`}
                           onClick={() => setBudgetMax(b.id)}
@@ -507,7 +510,7 @@ function SmartMatchQuiz() {
                   <h3 className="step-question-title">Any preferred active ingredients? (Optional)</h3>
                   <p className="step-question-desc">Select any specific actives you love to boost matching priority.</p>
 
-                  <div className="d-flex flex-wrap gap-2 mb-4">
+                  <div className="quiz-ingredients-grid d-flex flex-wrap gap-3 mb-4">
                     {ingredientChoices.map((ing) => {
                       const isSelected = selectedIngredients.includes(ing.toLowerCase());
                       return (
@@ -517,23 +520,36 @@ function SmartMatchQuiz() {
                           className={`ingredient-chip-btn ${isSelected ? 'active' : ''}`}
                           onClick={() => handleIngredientToggle(ing.toLowerCase())}
                         >
-                          <i className={`bi ${isSelected ? 'bi-check-circle-fill' : 'bi-plus-circle'} me-1`}></i>
-                          {ing}
+                          <i className={`bi ${isSelected ? 'bi-check-circle-fill' : 'bi-plus-circle'} me-2`}></i>
+                          <span>{ing}</span>
                         </button>
                       );
                     })}
                   </div>
 
                   {/* Summary preview before submit */}
-                  <div className="quiz-summary-box p-3 glass-card">
-                    <div className="fw-bold mb-2 text-primary-light">
-                      <i className="bi bi-card-checklist me-2"></i> Ready to Match:
+                  <div className="quiz-summary-box p-4 glass-card mt-4">
+                    <div className="quiz-summary-header mb-3">
+                      <i className="bi bi-card-checklist me-2 text-rose"></i>
+                      <strong>Your Selected Match Criteria:</strong>
                     </div>
-                    <div className="d-flex flex-wrap gap-2 text-muted fs-85">
-                      <span><strong>Category:</strong> {category}</span> •
-                      <span><strong>Profile:</strong> {skinType}</span> •
-                      <span><strong>Goal:</strong> {concern}</span> •
-                      <span><strong>Budget:</strong> {budgetMax ? `₹${budgetMax}` : 'Any'}</span>
+                    <div className="quiz-summary-tags-grid">
+                      <div className="quiz-summary-tag-item">
+                        <span className="summary-tag-label">Category</span>
+                        <span className="summary-tag-value">{category}</span>
+                      </div>
+                      <div className="quiz-summary-tag-item">
+                        <span className="summary-tag-label">Skin Profile</span>
+                        <span className="summary-tag-value">{skinType}</span>
+                      </div>
+                      <div className="quiz-summary-tag-item">
+                        <span className="summary-tag-label">Primary Goal</span>
+                        <span className="summary-tag-value">{concern}</span>
+                      </div>
+                      <div className="quiz-summary-tag-item">
+                        <span className="summary-tag-label">Max Budget</span>
+                        <span className="summary-tag-value">{budgetMax ? `Under ₹${budgetMax}` : 'Any Budget'}</span>
+                      </div>
                     </div>
                   </div>
                 </div>

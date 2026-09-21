@@ -375,3 +375,85 @@
   }
 }
 
+/* ── Guaranteed 2-Column Product Showcase Grid & Smooth Transition ─── */
+.product-showcase-card {
+  animation: detailFadeSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes detailFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-showcase-card > .row {
+  display: grid !important;
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr) !important;
+  gap: 38px !important;
+  align-items: start !important;
+  margin: 0 !important;
+}
+
+.product-showcase-card > .row > [class*="col-"] {
+  width: auto !important;
+  max-width: none !important;
+  flex: none !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+}
+
+/* Left Vertical Image Box */
+.detail-gallery-container {
+  width: 100%;
+}
+
+.detail-image-box {
+  width: 100% !important;
+  min-height: 440px !important;
+  aspect-ratio: 4 / 5 !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, #f8eae5 0%, #f2deda 55%, #ead5d3 100%) !important;
+  border: 1px solid #eaded9 !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  position: relative !important;
+  box-shadow: 0 14px 32px rgba(74, 48, 55, 0.08) !important;
+}
+
+.detail-hero-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  padding: 24px !important;
+  mix-blend-mode: multiply !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.detail-image-box:hover .detail-hero-image {
+  transform: scale(1.06) translateY(-4px) !important;
+}
+
+/* Right Content Box */
+.detail-content-box {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .product-showcase-card > .row {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .detail-image-box {
+    min-height: 320px !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+}
+

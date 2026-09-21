@@ -342,3 +342,118 @@
     font-size: 1.8rem;
   }
 }
+
+/* ── Clear, Spacious Quiz Progress Labels ──────────────────── */
+.quiz-progress-labels {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 16px !important;
+}
+
+.quiz-progress-step-text {
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  letter-spacing: 0.02em !important;
+}
+
+.quiz-progress-pct-text {
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  color: #f4c8c3 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ── Comfortable, Highly Readable Ingredient Chips ─────────── */
+.quiz-ingredients-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+}
+
+.ingredient-chip-btn {
+  padding: 10px 20px !important;
+  font-size: 0.92rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  border-radius: 99px !important;
+  background: #fff8f5 !important;
+  border: 1px solid #eaded9 !important;
+  color: #604b53 !important;
+  box-shadow: 0 4px 12px rgba(74, 48, 55, 0.04) !important;
+  transition: all 0.22s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.ingredient-chip-btn:hover {
+  background: #f5e8e3 !important;
+  border-color: #bd7889 !important;
+  color: #80505f !important;
+  transform: translateY(-2px) !important;
+}
+
+.ingredient-chip-btn.active {
+  background: #80505f !important;
+  border-color: #80505f !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(128, 80, 95, 0.25) !important;
+}
+
+/* ── Spacious, Elegant Step 5 Match Summary Box ────────────── */
+.quiz-summary-box {
+  background: #fffdfb !important;
+  border: 1px solid #eaded9 !important;
+  border-radius: 20px !important;
+  padding: 24px !important;
+  box-shadow: 0 10px 24px rgba(74, 48, 55, 0.05) !important;
+}
+
+.quiz-summary-heading {
+  font-size: 0.95rem !important;
+  color: #332631 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.quiz-summary-tags-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.quiz-summary-tag-item {
+  background: #fff8f5 !important;
+  border: 1px solid #eaded9 !important;
+  border-radius: 14px !important;
+  padding: 12px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.summary-tag-label {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: #8e8187 !important;
+}
+
+.summary-tag-value {
+  font-family: Georgia, serif !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  color: #332631 !important;
+  text-transform: capitalize !important;
+}
+
+@media (max-width: 600px) {
+  .quiz-summary-tags-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+}
