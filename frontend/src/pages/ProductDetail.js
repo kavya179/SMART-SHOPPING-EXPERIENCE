@@ -100,6 +100,8 @@ function ProductDetail() {
   const hasDiscount = discount_percent > 0;
   const categoryLabel = CATEGORY_LABELS[category] || category;
   const skinTypeLabel = SKIN_TYPE_LABELS[skin_type] || skin_type;
+  const productVideo = product.video_url || (category === 'haircare' ? '/joyory-haircare-routine.mp4' : '/joyory-skincare-routine.mp4');
+  const productVideoTitle = category === 'haircare' ? 'See the hair ritual in motion' : `See the ${categoryLabel.toLowerCase()} ritual in motion`;
 
   // Split key ingredients into chips if comma separated
   const ingredientChips = key_ingredients
@@ -313,6 +315,23 @@ function ProductDetail() {
             </div>
           </div>
         </div>
+
+        {/* ── Product Story Video ─────────────────────────────── */}
+        <section className="product-story-video-section mb-5">
+          <div className="product-story-video-card">
+            <video className="product-story-video" autoPlay muted loop playsInline poster={image_url}>
+              <source src={productVideo} type="video/mp4" />
+            </video>
+            <div className="product-story-video-overlay"></div>
+            <div className="product-story-video-copy">
+              <span className="badge-pill-glow badge-rose mb-2"><i className="bi bi-play-circle me-1"></i> Product ritual</span>
+              <h2>{productVideoTitle}</h2>
+              <p>Watch how this kind of formula fits into a simple, considered beauty routine.</p>
+              <span className="product-story-video-note"><i className="bi bi-volume-mute me-1"></i> Silent preview · loops gently</span>
+            </div>
+            <div className="product-story-product-chip"><img src={image_url} alt="" /><span><strong>{name}</strong><small>{brand}</small></span></div>
+          </div>
+        </section>
 
         {/* ── Formulation & Usage Deep Dive Grid ───────────── */}
         <div className="detail-deepdive-section mb-5">
