@@ -32,9 +32,13 @@ function CompareDock() {
             {compareList.map((product) => (
               <div className="dock-item-thumbnail-wrap" key={product.id} title={product.name}>
                 <img
-                  src={product.image_url}
+                  src={product.image_url || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80'}
                   alt={product.name}
                   className="dock-item-thumb"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80';
+                  }}
                 />
                 <button
                   className="dock-item-remove"

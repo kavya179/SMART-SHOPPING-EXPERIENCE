@@ -192,6 +192,15 @@ function SmartMatchQuiz() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80';
+const CATEGORY_FALLBACKS = {
+  skincare: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=600&q=80',
+  haircare: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=600&q=80',
+  bodycare: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80',
+  makeup: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80',
+  fragrance: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80',
+};
+
   // ─────────────────────────────────────────────────────────────
   // RENDER: Results View
   // ─────────────────────────────────────────────────────────────
@@ -206,10 +215,12 @@ function SmartMatchQuiz() {
             <div className="results-icon-badge mb-3">
               <i className="bi bi-stars"></i>
             </div>
-            <span className="badge-pill-glow badge-violet mb-2">
-              <i className="bi bi-cpu me-1"></i> Rule-Based Formulation Matching
-            </span>
-            <h1 className="results-main-title">
+            <div>
+              <span className="badge-pill-glow badge-violet mb-3 d-inline-flex align-items-center">
+                <i className="bi bi-cpu me-2"></i> Rule-Based Formulation Matching
+              </span>
+            </div>
+            <h1 className="results-main-title mt-2">
               Your Personalized <span className="gradient-text">SmartMatch Routine</span>
             </h1>
             <p className="results-main-sub mx-auto mb-4">{message}</p>
@@ -244,7 +255,7 @@ function SmartMatchQuiz() {
               <button className="btn-glass" onClick={handleRetake}>
                 <i className="bi bi-arrow-counterclockwise me-2"></i> Restart Finder
               </button>
-              <Link to="/products" className="btn-glow">
+              <Link to="/products" className="btn-glow btn-rose">
                 <i className="bi bi-grid-3x3-gap me-2"></i> View Full Catalog
               </Link>
             </div>
@@ -269,37 +280,45 @@ function SmartMatchQuiz() {
           <div className="row g-4 mb-5">
             {recommendations.map((item, idx) => {
               const { product, match_percentage, reasons } = item;
+              const fallback = CATEGORY_FALLBACKS[product.category] || FALLBACK_IMAGE;
               return (
                 <div className="col-lg-6" key={product.id || idx}>
                   <div className="matched-product-card glass-card p-4 h-100 d-flex flex-column justify-content-between">
                     <div>
                       {/* Top Match Badge */}
-                      <div className="d-flex align-items-center justify-content-between mb-3">
+                      <div className="matched-card-top-badges mb-3 d-flex align-items-center justify-content-between">
                         <span className="match-score-pill">
-                          <i className="bi bi-award-fill text-warning me-1"></i>
+                          <i className="bi bi-award-fill me-1 text-success"></i>
                           {match_percentage}% Formulation Match
                         </span>
-                        <span className="badge-pill-glow badge-violet">
+                        <span className="match-rank-badge">
                           #{idx + 1} Best Match
                         </span>
                       </div>
 
                       {/* Product Preview Row */}
-                      <div className="d-flex gap-3 align-items-center mb-3">
-                        <img
-                          src={product.image_url}
-                          alt={product.name}
-                          className="matched-prod-thumbnail"
-                        />
-                        <div>
-                          <span className="matched-prod-cat text-primary-light">{product.category}</span>
-                          <h4 className="matched-prod-title mb-1">
-                            <Link to={`/products/${product.id}`} className="text-white text-decoration-none">
+                      <div className="matched-prod-preview-row mb-4">
+                        <div className="matched-prod-img-box">
+                          <img
+                            src={product.image_url || fallback}
+                            alt={product.name}
+                            className="matched-prod-thumbnail"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = fallback;
+                            }}
+                          />
+                        </div>
+                        <div className="matched-prod-details-col">
+                          <span className="matched-prod-cat">{product.category}</span>
+                          <h4 className="matched-prod-title">
+                            <Link to={`/products/${product.id}`} className="matched-title-link">
                               {product.name}
                             </Link>
                           </h4>
                           <span className="matched-prod-brand">{product.brand}</span>
-                          <div className="matched-prod-price mt-1">
+                          <div className="matched-prod-price mt-2">
                             <span className="price-bold">₹{product.discounted_price || product.price}</span>
                             {product.discount_percent > 0 && (
                               <span className="price-strike ms-2">₹{product.price}</span>
@@ -311,14 +330,14 @@ function SmartMatchQuiz() {
                       {/* Why This Matches Rationale Box */}
                       <div className="why-matches-box p-3 mb-3">
                         <div className="why-matches-title mb-2">
-                          <i className="bi bi-magic text-primary-light me-1"></i>
+                          <i className="bi bi-magic text-rose me-2"></i>
                           <span>Why this matches your profile:</span>
                         </div>
                         <ul className="why-matches-list mb-0">
                           {reasons.map((reason, rIdx) => (
                             <li key={rIdx}>
-                              <i className="bi bi-check2 text-success me-2"></i>
-                              {reason}
+                              <i className="bi bi-check2 text-success me-2 flex-shrink-0"></i>
+                              <span>{reason}</span>
                             </li>
                           ))}
                         </ul>
@@ -326,9 +345,9 @@ function SmartMatchQuiz() {
                     </div>
 
                     {/* Card Actions */}
-                    <div className="d-flex gap-2 mt-auto pt-2">
-                      <Link to={`/products/${product.id}`} className="btn-glow flex-grow-1">
-                        View Product Details <i className="bi bi-arrow-right ms-1"></i>
+                    <div className="matched-card-actions pt-2 mt-auto">
+                      <Link to={`/products/${product.id}`} className="btn-glow btn-view-matched w-100">
+                        View Product Details <i className="bi bi-arrow-right ms-2"></i>
                       </Link>
                     </div>
                   </div>

@@ -147,7 +147,15 @@ function ComparePage() {
                           <i className="bi bi-x-lg"></i>
                         </button>
                         <div className="compare-prod-img-wrap mx-auto mb-3">
-                          <img src={product.image_url} alt={product.name} className="compare-prod-img" />
+                          <img
+                            src={product.image_url || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80'}
+                            alt={product.name}
+                            className="compare-prod-img"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80';
+                            }}
+                          />
                         </div>
                         <span className="compare-cat-tag">{product.category}</span>
                         <h5 className="compare-prod-name mb-1">
